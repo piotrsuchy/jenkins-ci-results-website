@@ -1,1 +1,5 @@
 flask
+python@3.11
+robotframework
+requests
+os

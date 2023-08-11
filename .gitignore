@@ -1,1 +1,5 @@
-jenkins-ci-website/
+log.html
+output.xml
+report.html
+venv/
+__pycache__/
