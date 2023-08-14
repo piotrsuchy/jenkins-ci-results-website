@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Test Results</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>TEST NAME</th>
+            <th>STATUS</th>
+            <th>TIMESTAMP</th>
+        </tr>
+        {% for result in test_results %}
+        <tr>
+            <td>{{ result['name'] }}</td>
+            <td>{{ result['status'] }}</td>
+            <td>{{ result['timestamp'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
