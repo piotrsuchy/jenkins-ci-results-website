@@ -1,0 +1,15 @@
+body {
+    background-color: black;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: yellowgreen;
+}
+th, td {
+    border: 1px solid grey;
+    padding: 8px 12px;
+}
+th {
+    background-color: grey;
+}
