@@ -23,3 +23,25 @@ Content:
 - list of failing test cases
 - karczoch link to logs
 - pass or fail depending on number of failing tests (>= 80% pass is a passing run)
+
+## Jenkins API
+
+Jenkins information is taken from the jobs listed here:
+[Jenkins CI_5G_robot_AVQL search](http://janusz.emea.nsn-net.net:8080/search/?q=CI_5G_robot_AVQL_&Jenkins-Crumb=2f226643baba61453f6c7e39cc93d6e2e4bd376e90ab2944b3f04fdc6daa0942)
+
+I've created a list of pipelines managed by our team and with CI methodology based on that search.
+Currently the json file contains fields such as:
+
+- setup
+- job_name
+- ip (of the setup)
+- URL (full url on jenkins)
+- comment
+
+## TODO
+
+- integration with a database
+- visualisation on the website
+- converting from output in the terminal
+- robot framework listener - live information from the setup
+- links to karczoch logs

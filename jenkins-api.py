@@ -1,28 +1,36 @@
 import urllib3
 import re
 import requests
+import json
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Updated Jenkins URL for the specified job 
-JENKINS_URL = "https://janusz.emea.nsn-net.net:8443/job/CI_5G_robot_AVQL_Smoke_Tests_rexIO/api/json?tree=builds[number,url,result,timestamp,duration,description]{0,10}"
+
+def get_pipelines():
+    with open('setups_config.json', 'r') as file:
+        data = json.load(file)
+        return data['pipelines']
+
 
 def extract_test_results(description):
     """
     Extracts test results from the description field using a regular expression.
     """
     pattern = r"All Tests: (\d+) tests \((\d+) OK, (\d+) FAIL\)"
-    match = re.search(pattern, description)
-    if match:
-        total_tests, passed_tests, failed_tests = match.groups()
-        return int(total_tests), int(passed_tests), int(failed_tests)
+    if description and isinstance(description, str): # Check that description is not None and is a string
+        match = re.search(pattern, description)
+        if match:
+            total_tests, passed_tests, failed_tests = match.groups()
+            return int(total_tests), int(passed_tests), int(failed_tests)
     return None
 
-def get_latest_builds():
+
+def get_latest_builds(job_name, setup_name):
     """
     Fetches information about the latest builds for the specified Jenkins job.
     """
-    response = requests.get(JENKINS_URL, verify=False)
+    # Updated Jenkins URL for the specified job 
+    response = requests.get("http://janusz.emea.nsn-net.net:8080/job/" + job_name + "api/json?tree=builds[number,url,result,timestamp,duration,description]{0,10}", verify=False)
     response.raise_for_status()  # Raise an exception for HTTP errors
     
     data = response.json()
@@ -40,6 +48,7 @@ def get_latest_builds():
         test_results = extract_test_results(description)
         if test_results:
             total_tests, passed_tests, failed_tests = test_results
+            print("-"*20 + "PIPELINE: ", setup_name + "-"*20)
             print(f"Build #{number} - Status: {status}")
             print(f"URL: {url}")
             print(f"Started at: {timestamp} (seconds since epoch)")
@@ -50,5 +59,9 @@ def get_latest_builds():
             print(f"Build #{number} - Status: {status} (Test results not found in description)")
             print("-" * 50)
 
-# Fetch latest builds
-get_latest_builds()
+
+pipelines = get_pipelines()
+for pipeline in pipelines:
+    pipeline_job_name = pipeline["job_name"]
+    pipeline_setup_name = pipeline["setup"]
+    get_latest_builds(pipeline_job_name, pipeline_setup_name)

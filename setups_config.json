@@ -1,0 +1,109 @@
+{
+  "pipelines": [
+    {
+      "setup": "VM0 - Regression CIT RFP",
+      "job_name": "CI_5G_robot_AVQL_Regression_Tests_CIT_RFP_rexIO/",
+      "ip": "10.83.204.180",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Regression_Tests_CIT_RFP_rexIO/",
+      "comment": ""
+    },
+    {
+      "setup": "VM0 - Regression CRT RFP",
+      "job_name": "CI_5G_robot_AVQL_Regression_Tests_CRT_RFP_rexIO/",
+      "ip": "10.83.204.180",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Regression_Tests_CRT_RFP_rexIO/",
+      "comment": ""
+    },
+    {
+      "setup": "VM0 - Regression Tests stabi branch",
+      "job_name": "CI_5G_robot_AVQL_Regression_Tests_stabi_branch_rexIO/",
+      "ip": "10.83.204.180",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Regression_Tests_stabi_branch_rexIO/",
+      "comment": "raz na tydzień"
+    },
+    {
+      "setup": "VM1 - Smoke Tests",
+      "job_name": "CI_5G_robot_AVQL_Smoke_Tests_rexIO/",
+      "ip": "10.83.204.184",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Smoke_Tests_rexIO/",
+      "comment": ""
+    },
+    {
+      "setup": "VM2 - Acceptance Tests",
+      "job_name": "CI_5G_robot_AVQL_Acceptance_Tests_rexIO/",
+      "ip": "10.83.204.181",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Acceptance_Tests_rexIO/",
+      "comment": ""
+    },
+    {
+      "setup": "VM2 - Acceptance Tests 23R4",
+      "job_name": "CI_5G_robot_AVQL_Acceptance_Tests_rexIO_23R4/",
+      "ip": "10.83.204.181",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Acceptance_Tests_rexIO_23R4/",
+      "comment": ""
+    },
+    {
+      "setup": "VM2 - Acceptance Tests stabi branch",
+      "job_name": "CI_5G_robot_AVQL_Acceptance_Tests_stabi_branch_rexIO/",
+      "ip": "10.83.204.181",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Acceptance_Tests_stabi_branch_rexIO/",
+      "comment": "Raz na tydzień"
+    },
+    {
+      "setup": "VM4 - Regression BIST Tests",
+      "job_name": "CI_5G_robot_AVQL_Regression_BIST_Tests/",
+      "ip": "10.83.207.224",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Regression_BIST_Tests/",
+      "comment": ""
+    },
+    {
+      "setup": "VM5 - Regression CIT Linux",
+      "job_name": "CI_5G_robot_AVQL_Regression_Tests_CIT_Linux_rexIO/",
+      "ip": "10.83.204.232",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Regression_Tests_CIT_Linux_rexIO/",
+      "comment": ""
+    },
+    {
+      "setup": "VM5 - Regression CRT Linux",
+      "job_name": "CI_5G_robot_AVQL_Regression_Tests_CRT_Linux_rexIO/",
+      "ip": "10.83.204.232",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Regression_Tests_CRT_Linux_rexIO/",
+      "comment": "17 buildów, raz na parę dni"
+    },
+    {
+      "setup": "VM5 - Regression Tests Linux stabi",
+      "job_name": "CI_5G_robot_AVQL_Regression_Tests_Linux_stabi_rexIO/",
+      "ip": "10.83.204.232",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Regression_Tests_Linux_stabi_rexIO/",
+      "comment": "17 buildów raz na tydzień"
+    },
+    {
+      "setup": "VM7 - Startup Reliability Tests",
+      "job_name": "CI_5G_robot_AVQL_Startup_Reliability_Tests_rexIO/",
+      "ip": "10.83.206.68",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Startup_Reliability_Tests_rexIO/",
+      "comment": "Raz na 12 godzin"
+    },
+    {
+      "setup": "VM12 - Regression CRT Alarms",
+      "job_name": "CI_5G_robot_AVQL_Regression_Tests_CRT_Alarms_rexIO/",
+      "ip": "10.83.204.109",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Regression_Tests_CRT_Alarms_rexIO/",
+      "comment": "od 5 sierpnia raz na parę dni"
+    },
+    {
+      "setup": "VM14 - Smoke Tests - A101",
+      "job_name": "CI_5G_robot_AVQL_Smoke_Tests_rexIO_A101/",
+      "ip": "10.83.204.100",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Smoke_Tests_rexIO_A101/",
+      "comment": ""
+    },
+    {
+      "setup": "VM15 - Acceptance Tests - A101",
+      "job_name": "CI_5G_robot_AVQL_Acceptance_Tests_rexIO_A101/",
+      "ip": "10.83.207.3",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Acceptance_Tests_rexIO_A101/",
+      "comment": ""
+    }
+  ]
+}
