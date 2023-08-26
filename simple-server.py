@@ -11,11 +11,14 @@ def index():
 @app.route('/post_message', methods=['POST'])
 def post_message():
     message = request.form.get('message')
-    name, status, timestamp = message.split(", ")
+    progress = request.form.get('progress')
+    suite_name, test_name, status, timestamp = message.split(", ")
     test_results.append({
-        'name': name.split(": ")[1],
+        'suite_name': suite_name.split(": ")[1],
+        'test_name': test_name.split(": ")[1],
         'status': status.split(": ")[1],
-        'timestamp': timestamp.split(": ")[1]
+        'timestamp': timestamp.split(": ")[1],
+        'progress': progress
     })
     return "Message received", 200
 
