@@ -1,6 +1,8 @@
 log.html
 output.xml
 report.html
+debug.log
 venv/
 __pycache__/
 output.txt
+.env

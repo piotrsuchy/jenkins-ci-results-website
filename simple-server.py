@@ -1,6 +1,19 @@
+import os
+import psycopg2
 from flask import Flask, request, render_template
+from dotenv import load_dotenv
 
+load_dotenv()
 app = Flask(__name__)
+
+app.config['DB_CONN'] = psycopg2.connect(
+    dbname=os.environ.get("DB_NAME"),
+    user=os.environ.get("DB_USER"),
+    password=os.environ.get("DB_PASS"),
+    host=os.environ.get("DB_HOST"),
+    port=os.environ.get("DB_PORT")
+)
+
 
 test_results = []
 

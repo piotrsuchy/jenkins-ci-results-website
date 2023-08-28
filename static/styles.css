@@ -13,3 +13,9 @@ th, td {
 th {
     background-color: grey;
 }
+.scrollable {
+    height: 150px; /* Set to a fixed height */
+    overflow-y: auto; /* Enable vertical scroll */
+    overflow-x: hidden; /* Disable horizontal scroll, optional */
+}
+

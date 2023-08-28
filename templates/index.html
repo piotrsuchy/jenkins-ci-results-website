@@ -4,22 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <title>Test Results</title>
+    <title>Pipeline Monitoring</title>
 </head>
 <body>
     <table>
         <tr>
-            <th>TEST NAME</th>
-            <th>STATUS</th>
-            <th>TIMESTAMP</th>
+            <th>SETUP</th>
+            <th>SCOPE</th>
+            <th>PROGRESS</th>
+            <th>TEST</th>
+            <th>LAST RUNS</th>
+            <th>FAILING TCs</th>
         </tr>
-        {% for result in test_results %}
+        <!-- Example row to visualize layout -->
         <tr>
-            <td>{{ result['name'] }}</td>
-            <td>{{ result['status'] }}</td>
-            <td>{{ result['timestamp'] }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                <div class="scrollable">
+                </div>
+            </td>
+            <td>
+                <div class="scrollable">
+                </div>
+            </td>
         </tr>
-        {% endfor %}
+        <!-- Add more rows as needed for visualizing the layout -->
     </table>
 </body>
 </html>
