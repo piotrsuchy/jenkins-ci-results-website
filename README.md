@@ -11,12 +11,13 @@ Information we need is:
 - build being tested - robot framework listener
 - test suite being tested - robot framework listener
 - progress (which TC is being tested out of how many) - robot framework listener
-- results - could be taken from either one 
+- results - could be taken from either one
 
 ## Summary of the project, requirements from others
 
 Live view of the setups, visualised altogether on one page
 Content:
+
 - setup name
 - which scope is being run
 - jenkins info (last few runs, queue, status, stats and duration of tests)

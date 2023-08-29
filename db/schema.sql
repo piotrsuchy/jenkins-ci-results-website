@@ -34,6 +34,6 @@ CREATE TABLE JenkinsInfo (
 CREATE TABLE FailingTestCases (
     failing_tc_id SERIAL PRIMARY KEY,
     setup_id INT REFERENCES Setups(setup_id),
-    test_id INT REFERENCES Tests(test_id)
+    test_id INT REFERENCES Tests(test_id),
     failing_test_cases TEXT -- or JSON depending on your needs
 );

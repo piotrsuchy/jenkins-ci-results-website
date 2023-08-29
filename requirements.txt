@@ -1,3 +1,5 @@
 flask
 robotframework
 requests
+psycopg2
+dotenv

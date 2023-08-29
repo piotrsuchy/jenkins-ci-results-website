@@ -6,3 +6,4 @@ venv/
 __pycache__/
 output.txt
 .env
+temporary_test/
