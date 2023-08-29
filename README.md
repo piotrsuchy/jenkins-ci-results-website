@@ -39,10 +39,27 @@ Currently the json file contains fields such as:
 - URL (full url on jenkins)
 - comment
 
+## Currently
+
+The flask app connects to the database and truncates all the tables in the database (resetting the primary keys).
+Afterwards, it populates the table 'setups' with records based on the setups_config.json file:
+
+![setups table](media/setups_table.png)
+
+The listener has methods end_test() and end_suite() that are writing into the database as follows:
+
+- end_suite() that writes to 'scopes'
+
+![scopes table](media/scopes_table.png)
+
+- end_test() that writes to 'tests'
+
+![tests table](media/tests_table.png)
+
 ## TODO
 
-- integration with a database
+- integration with a database - **IN PROGRESS**
+- robot framework listener - **IN PROGRESS**
+- restructuring so simple-server.py is not overloaded
 - visualisation on the website
-- converting from output in the terminal
-- robot framework listener - live information from the setup
 - links to karczoch logs
