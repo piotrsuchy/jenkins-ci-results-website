@@ -1,6 +1,13 @@
 {
   "pipelines": [
     {
+      "setup": "LOCALHOST",
+      "job_name": "no_name",
+      "ip": "127.0.0.1",
+      "URL": "",
+      "comment": "Placeholder for localhost"
+    },
+    {
       "setup": "VM0 - Regression CIT RFP",
       "job_name": "CI_5G_robot_AVQL_Regression_Tests_CIT_RFP_rexIO/",
       "ip": "10.83.204.180",
