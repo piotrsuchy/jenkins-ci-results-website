@@ -60,11 +60,9 @@ def index():
     cursor.execute("SELECT * FROM setups;")
     setups = cursor.fetchall()
 
-    # Convert each row to a dictionary if needed
-    # setups = [dict(row) for row in setups]
-
     cursor.close()
     conn.close()
+    setups = [dict(setup_id=row[0], name=row[1], comment=row[2]) for row in setups]
 
     return render_template("index.html", setups=setups)
 
