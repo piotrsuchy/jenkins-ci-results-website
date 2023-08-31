@@ -16,9 +16,9 @@
             <th>LAST RUNS</th>
             <th>FAILING TCs</th>
         </tr>
-        <!-- Example row to visualize layout -->
+        {% for setup in setups %}
         <tr>
-            <td></td>
+            <td>{{ setup.name }}</td>
             <td></td>
             <td></td>
             <td></td>
@@ -31,7 +31,7 @@
                 </div>
             </td>
         </tr>
-        <!-- Add more rows as needed for visualizing the layout -->
+        {% endfor %}
     </table>
 </body>
 </html>
