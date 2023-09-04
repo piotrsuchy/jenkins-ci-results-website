@@ -1,18 +1,12 @@
 import os, psycopg2, json
-from psycopg2 import sql
 from flask import Flask, request, render_template, jsonify
-from dotenv import load_dotenv
 
-load_dotenv()
+# Import utilities
+from utils.db_utils import get_db_connection
+
 app = Flask(__name__)
 
-app.config["DB_CONN"] = psycopg2.connect(
-    dbname=os.environ.get("DB_NAME"),
-    user=os.environ.get("DB_USER"),
-    password=os.environ.get("DB_PASS"),
-    host=os.environ.get("DB_HOST"),
-    port=os.environ.get("DB_PORT"),
-)
+app.config["DB_CONN"] = get_db_connection()
 
 conn = app.config["DB_CONN"]
 
@@ -34,7 +28,9 @@ def populate_setups_table():
         return
 
     for pipeline in config["pipelines"]:
-        insert_query = sql.SQL("INSERT INTO setups (name, comment) VALUES (%s, %s);")
+        insert_query = psycopg2.sql.SQL(
+            "INSERT INTO setups (name, comment) VALUES (%s, %s);"
+        )
         cur.execute(insert_query, (pipeline["setup"], pipeline.get("comment", "")))
 
     conn.commit()
@@ -46,14 +42,7 @@ test_results = []
 
 @app.route("/")
 def index():
-    # Setup your PostgreSQL connection here
-    conn = psycopg2.connect(
-        dbname=os.environ.get("DB_NAME"),
-        user=os.environ.get("DB_USER"),
-        password=os.environ.get("DB_PASS"),
-        host=os.environ.get("DB_HOST"),
-        port=os.environ.get("DB_PORT"),
-    )
+    conn = get_db_connection()
 
     # Fetch setups from the database
     cursor = conn.cursor()
@@ -91,7 +80,7 @@ def post_test_results():
     conn = app.config["DB_CONN"]
     cur = conn.cursor()
 
-    insert_query = sql.SQL(
+    insert_query = psycopg2.sql.SQL(
         "INSERT INTO tests (name, duration) VALUES (%s, %s) RETURNING test_id;"
     )
     cur.execute(insert_query, (data["test_name"], data["duration"]))
@@ -112,11 +101,9 @@ def post_scope_results():
         conn = app.config["DB_CONN"]
         cur = conn.cursor()
 
-        # Your updated SQL query and operations here
         insert_query = """INSERT INTO scopes (setup_id, name, duration)
                           VALUES (%s, %s, %s) RETURNING scope_id;"""
 
-        # Then use this default setup_id in the SQL query
         cur.execute(insert_query, (data["setup_id"], data["name"], data["duration"]))
 
         conn.commit()
@@ -146,7 +133,7 @@ if __name__ == "__main__":
     cur = conn.cursor()
     cur.execute(
         "TRUNCATE setups, scopes, tests, jenkinsinfo, failingtestcases RESTART IDENTITY;"
-    )  # Replace 'table_name' with your actual table name
+    )
     conn.commit()
     cur.close()
 
