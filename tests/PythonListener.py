@@ -47,6 +47,7 @@ class PythonListener:
 
         if matching_setup:
             setup_name = matching_setup["setup"]
+            scope_name = matching_setup["job_name"]
             setup_id = get_setup_id_by_name(
                 setup_name, conn
             )  # get setup_id from database
@@ -56,7 +57,7 @@ class PythonListener:
 
         scope_data = {
             "setup_id": setup_id,
-            "name": setup_name,
+            "name": scope_name,
             "duration": result.elapsedtime / 1000,
         }
 

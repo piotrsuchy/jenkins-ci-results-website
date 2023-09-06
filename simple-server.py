@@ -2,7 +2,7 @@ import os, psycopg2, json
 from flask import Flask, request, render_template, jsonify
 
 # Import utilities
-from utils.db_utils import get_db_connection
+from utils.db_utils import get_db_connection, tuple_to_dict
 
 app = Flask(__name__)
 
@@ -47,13 +47,23 @@ def index():
     # Fetch setups from the database
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM setups;")
-    setups = cursor.fetchall()
+    setups = [tuple_to_dict(row, cursor) for row in cursor.fetchall()]
+
+    cursor.execute("SELECT * FROM scopes;")
+    scopes_list = [tuple_to_dict(row, cursor) for row in cursor.fetchall()]
+
+    # Create a dictionary with setup_id as key and its scopes as values
+    scopes = {}
+    for scope in scopes_list:
+        if scope["setup_id"] in scopes:
+            scopes[scope["setup_id"]].append(scope)
+        else:
+            scopes[scope["setup_id"]] = [scope]
 
     cursor.close()
     conn.close()
-    setups = [dict(setup_id=row[0], name=row[1], comment=row[2]) for row in setups]
 
-    return render_template("index.html", setups=setups)
+    return render_template("index.html", setups=setups, scopes=scopes)
 
 
 @app.route("/post_message", methods=["POST"])
