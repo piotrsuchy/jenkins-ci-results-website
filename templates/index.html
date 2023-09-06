@@ -22,7 +22,7 @@
 
                 <td>
                     {% if setup.setup_id in scopes %}
-                        {{ scopes[setup.setup_id][0].name }}
+                        {{ scopes[setup.setup_id][-1].name }}
                     {% endif %}
                 </td>
 
