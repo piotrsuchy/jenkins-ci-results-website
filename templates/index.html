@@ -17,20 +17,26 @@
             <th>FAILING TCs</th>
         </tr>
         {% for setup in setups %}
-        <tr>
-            <td>{{ setup.name }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>
-                <div class="scrollable">
-                </div>
-            </td>
-            <td>
-                <div class="scrollable">
-                </div>
-            </td>
-        </tr>
+            <tr>
+                <td>{{ setup.name }}</td>
+
+                <td>
+                    {% if setup.setup_id in scopes %}
+                        {{ scopes[setup.setup_id][0].name }}
+                    {% endif %}
+                </td>
+
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="scrollable">
+                    </div>
+                </td>
+                <td>
+                    <div class="scrollable">
+                    </div>
+                </td>
+            </tr>
         {% endfor %}
     </table>
 </body>
