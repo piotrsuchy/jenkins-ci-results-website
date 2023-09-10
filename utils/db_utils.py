@@ -1,21 +1,32 @@
+# db_utils.py
+
 # utility functions related to databases
 import psycopg2
 from psycopg2 import sql
 import os
 from dotenv import load_dotenv
+from psycopg2.pool import SimpleConnectionPool
 
 load_dotenv()
 
+# Setting up the Connection Pool
+DATABASE_POOL = SimpleConnectionPool(
+    minconn=1,
+    maxconn=5,
+    dbname=os.environ.get("DB_NAME"),
+    user=os.environ.get("DB_USER"),
+    password=os.environ.get("DB_PASS"),
+    host=os.environ.get("DB_HOST"),
+    port=os.environ.get("DB_PORT"),
+)
+
 
 def get_db_connection():
-    conn = psycopg2.connect(
-        dbname=os.environ.get("DB_NAME"),
-        user=os.environ.get("DB_USER"),
-        password=os.environ.get("DB_PASS"),
-        host=os.environ.get("DB_HOST"),
-        port=os.environ.get("DB_PORT"),
-    )
-    return conn
+    return DATABASE_POOL.getconn()
+
+
+def release_db_connection(conn):
+    DATABASE_POOL.putconn(conn)
 
 
 def get_setup_id_by_name(setup_name, conn):

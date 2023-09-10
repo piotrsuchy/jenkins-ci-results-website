@@ -1,22 +1,15 @@
-import os, psycopg2, json
+import psycopg2, json
 from flask import Flask, request, render_template, jsonify
 
 # Import utilities
-from utils.db_utils import get_db_connection, tuple_to_dict
+from utils.db_utils import get_db_connection, tuple_to_dict, release_db_connection
 
 app = Flask(__name__)
-
-app.config["DB_CONN"] = get_db_connection()
-
-conn = app.config["DB_CONN"]
 
 
 # filling setups table with records from config json
 def populate_setups_table():
-    with open("setups_config.json") as f:
-        config = json.load(f)
-
-    conn = app.config["DB_CONN"]
+    conn = get_db_connection()
     cur = conn.cursor()
 
     # Check if table is empty
@@ -25,7 +18,11 @@ def populate_setups_table():
     if count > 0:
         print("Setups table already populated, skipping initialization.")
         cur.close()
+        release_db_connection(conn)
         return
+
+    with open("setups_config.json") as f:
+        config = json.load(f)
 
     for pipeline in config["pipelines"]:
         insert_query = psycopg2.sql.SQL(
@@ -35,6 +32,7 @@ def populate_setups_table():
 
     conn.commit()
     cur.close()
+    release_db_connection(conn)
 
 
 test_results = []
@@ -61,7 +59,7 @@ def index():
             scopes[scope["setup_id"]] = [scope]
 
     cursor.close()
-    conn.close()
+    release_db_connection(conn)
 
     return render_template("index.html", setups=setups, scopes=scopes)
 
@@ -87,7 +85,7 @@ def post_message():
 def post_test_results():
     data = request.get_json()
 
-    conn = app.config["DB_CONN"]
+    conn = get_db_connection()
     cur = conn.cursor()
 
     insert_query = psycopg2.sql.SQL(
@@ -98,6 +96,7 @@ def post_test_results():
 
     conn.commit()
     cur.close()
+    release_db_connection(conn)
 
     return {"message": "Test results written to database", "test_id": test_id}, 200
 
@@ -107,10 +106,10 @@ def post_scope_results():
     data = request.get_json()
     response = {}
 
-    try:
-        conn = app.config["DB_CONN"]
-        cur = conn.cursor()
+    conn = get_db_connection()
+    cur = conn.cursor()
 
+    try:
         insert_query = """INSERT INTO scopes (setup_id, name, duration)
                           VALUES (%s, %s, %s) RETURNING scope_id;"""
 
@@ -125,6 +124,7 @@ def post_scope_results():
         response["code"] = 200
 
         cur.close()
+        release_db_connection(conn)
 
     except Exception as e:
         conn.rollback()
@@ -138,14 +138,14 @@ def post_scope_results():
 
 
 if __name__ == "__main__":
-    # for development purposes atm:
-    conn = app.config["DB_CONN"]
+    conn = get_db_connection()
     cur = conn.cursor()
     cur.execute(
         "TRUNCATE setups, scopes, tests, jenkinsinfo, failingtestcases RESTART IDENTITY;"
     )
     conn.commit()
     cur.close()
+    release_db_connection(conn)
 
     populate_setups_table()
     app.run(port=5000, debug=True)
