@@ -3,7 +3,7 @@ import sys
 import subprocess
 
 
-def run_robot_tests():
+def run_robot_tests(test_file_name):
     # Determine the script's directory
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -18,7 +18,7 @@ def run_robot_tests():
     os.chdir(script_dir)
 
     # Determine paths for test files and the listener
-    test_file_path = os.path.join(project_root, "tests", "example_tests.robot")
+    test_file_path = os.path.join(project_root, "tests", f"{test_file_name}.robot")
     listener_file_path = os.path.join(project_root, "tests", "PythonListener.py")
 
     subprocess.run(
@@ -27,4 +27,9 @@ def run_robot_tests():
 
 
 if __name__ == "__main__":
-    run_robot_tests()
+    if len(sys.argv) != 2:
+        print("Usage: python run_tests.py <test_file_name>")
+        sys.exit(1)
+    
+    test_file_name = sys.argv[1]
+    run_robot_tests(test_file_name)
