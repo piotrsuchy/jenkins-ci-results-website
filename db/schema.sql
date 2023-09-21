@@ -10,9 +10,11 @@ CREATE TABLE Scopes (
     scope_id SERIAL PRIMARY KEY,
     setup_id INT REFERENCES Setups(setup_id),
     name VARCHAR(255),
-    duration REAL,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
     completed_tests INT,
-    total_tests INT
+    total_tests INT,
+    status VARCHAR(50)
 );
 
 -- Tests Table
@@ -20,7 +22,9 @@ CREATE TABLE Tests (
     test_id SERIAL PRIMARY KEY,
     scope_id INT REFERENCES Scopes(scope_id),
     name VARCHAR(255),
-    duration REAL
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    status VARCHAR(50)
 );
 
 -- JenkinsInfo Table
