@@ -34,7 +34,6 @@ def populate_setups_table():
     cur.close()
     release_db_connection(conn)
 
-
 test_results = []
 
 
@@ -58,10 +57,21 @@ def index():
         else:
             scopes[scope["setup_id"]] = [scope]
 
+    cursor.execute("SELECT * FROM tests;")
+    tests_list = [tuple_to_dict(row, cursor) for row in cursor.fetchall()]
+
+    # Create a dictionary with scope_id as key and its test as values
+    tests = {}
+    for test in tests_list:
+        if test["scope_id"] in tests:
+            tests[test["scope_id"]].append(test)
+        else:
+            tests[test["scope_id"]] = [test]
+
     cursor.close()
     release_db_connection(conn)
 
-    return render_template("index.html", setups=setups, scopes=scopes)
+    return render_template("index.html", setups=setups, scopes=scopes, tests=tests)
 
 
 @app.route("/post_message", methods=["POST"])
@@ -89,9 +99,9 @@ def post_test_results():
     cur = conn.cursor()
 
     insert_query = psycopg2.sql.SQL(
-        "INSERT INTO tests (name, duration) VALUES (%s, %s) RETURNING test_id;"
+        "INSERT INTO tests (name, start_time, scope_id) VALUES (%s, %s, %s) RETURNING test_id;"
     )
-    cur.execute(insert_query, (data["test_name"], data["duration"]))
+    cur.execute(insert_query, (data["test_name"], data["start_time"], data["scope_id"]))
     test_id = cur.fetchone()[0]
 
     conn.commit()
@@ -110,10 +120,10 @@ def post_scope_results():
     cur = conn.cursor()
 
     try:
-        insert_query = """INSERT INTO scopes (setup_id, name, duration)
+        insert_query = """INSERT INTO scopes (setup_id, name, start_time)
                           VALUES (%s, %s, %s) RETURNING scope_id;"""
 
-        cur.execute(insert_query, (data["setup_id"], data["name"], data["duration"]))
+        cur.execute(insert_query, (data["setup_id"], data["name"], data["start_time"]))
 
         conn.commit()
         scope_id = cur.fetchone()[0]
@@ -134,10 +144,85 @@ def post_scope_results():
         response["status"] = "error"
         response["code"] = 500
 
+    return jsonify({
+        "message": "Scope results successfully written to database.",
+        "status": "success",
+        "code": 200,
+        "scope_id": scope_id
+    }), 200
+
+
+@app.route("/update_end_time", methods=["PUT"])
+def update_end_time():
+    data = request.get_json()
+    table_name = data["table_name"]  
+    
+    # Check if provided table name is valid (you can expand this list as needed)
+    if table_name not in ['tests', 'scopes']:
+        return jsonify({"message": "Invalid table name", "status": "error", "code": 400}), 400
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        update_query = f"UPDATE {table_name} SET end_time = NOW(), status = %s WHERE {table_name[:-1]}_id = %s;"
+        cur.execute(update_query, (data["status"], data["id"]))
+        conn.commit()
+
+        response = {
+            "message": f"{table_name[:-1].capitalize()} end time updated successfully.",
+            "status": "success",
+            "code": 200
+        }
+    except Exception as e:
+        conn.rollback()
+        response = {
+            "message": f"An error occurred: {e}",
+            "status": "error",
+            "code": 500
+        }
+
+    cur.close()
+    release_db_connection(conn)
     return jsonify(response), response["code"]
 
 
-if __name__ == "__main__":
+@app.route("/current_test_data", methods=["GET"])
+def current_test_data():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Fetch the latest tests and scopes for each setup, and also fetch setup_id and start_times
+    cursor.execute("""WITH RankedTests AS (
+                    SELECT 
+                        setups.setup_id,
+                        setups.name as setup_name, 
+                        tests.name as test_name,
+                        tests.start_time as test_start_time,  
+                        scopes.name as scope_name,
+                        scopes.start_time as scope_start_time,  
+                        ROW_NUMBER() OVER (PARTITION BY setups.setup_id ORDER BY tests.start_time DESC) as row_num
+                    FROM 
+                        setups 
+                    LEFT JOIN 
+                        scopes ON setups.setup_id = scopes.setup_id 
+                    LEFT JOIN 
+                        tests ON scopes.scope_id = tests.scope_id
+                    )
+                    SELECT setup_id, setup_name, test_name, test_start_time, scope_name, scope_start_time  
+                    FROM RankedTests 
+                    WHERE row_num = 1;
+                    """)
+
+    data = cursor.fetchall()
+    results = [tuple_to_dict(t, cursor) for t in data]
+
+    cursor.close()
+    release_db_connection(conn)
+    
+    return jsonify(results)
+
+
+if __name__ == "__main__":        
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute(

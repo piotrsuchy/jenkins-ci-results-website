@@ -11,33 +11,83 @@
         <tr>
             <th>SETUP</th>
             <th>SCOPE</th>
+            <th>SC. DURATION</th>
             <th>PROGRESS</th>
             <th>TEST</th>
+            <th>TEST DURATION</th>
             <th>LAST RUNS</th>
             <th>FAILING TCs</th>
         </tr>
+
         {% for setup in setups %}
             <tr>
+                <!-- SETUP COLUMN -->
                 <td>{{ setup.name }}</td>
 
-                <td>
+                <!-- SCOPE COLUMN -->
+                <td id="scopeNameElement_ {{ setup.setup_id }}">
                     {% if setup.setup_id in scopes %}
-                        {{ scopes[setup.setup_id][-1].name }}
+                        {% set latest_scope = scopes[setup.setup_id][-1] %}
+                        {% if latest_scope.status == "running" %}
+                            {{ latest_scope.name }}
+                        {% else %}
+                            Nothing
+                        {% endif %}
+                    {% else %}
+                        Nothing
                     {% endif %}
                 </td>
 
-                <td></td>
-                <td></td>
+                <!-- SC. DURATION COLUMN -->
                 <td>
-                    <div class="scrollable">
-                    </div>
+                    {% if setup.setup_id in scopes and latest_scope.status == "running" %}
+                        <span class="scope-duration" data-start-time="{{ latest_scope.start_time }}"></span>
+                    {% else %}
+                        -
+                    {% endif %}
                 </td>
+
+                <!-- PROGRESS COLUMN -->
+                <td></td>
+
+                <!-- TEST COLUMN -->
+                <td id="testNameElement_{{ setup.setup_id }}">
+                    {% if setup.setup_id in scopes and latest_scope.scope_id in tests %}
+                        {% set latest_test = tests[latest_scope.scope_id][-1] %}
+                        {% if latest_test.status == "running" %}
+                            {{ latest_test.name }}
+                        {% else %}
+                            Nothing
+                        {% endif %}
+                    {% else %}
+                        Nothing
+                    {% endif %}
+                </td>
+
+                <!-- TEST DURATION COLUMN -->
                 <td>
-                    <div class="scrollable">
-                    </div>
+                    {% if setup.setup_id in scopes and latest_scope.scope_id in tests and latest_test.status == "running" %}
+                        <span class="test-duration" data-start-time="{{ latest_test.start_time }}"></span>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <!-- LAST RUNS COLUMN -->
+                <td>
+                    <div class="scrollable"></div>
+                </td>
+
+                <!-- FAILING TCs COLUMN -->
+                <td>
+                    <div class="scrollable"></div>
                 </td>
             </tr>
         {% endfor %}
-    </table>
+
+
+   </table>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
