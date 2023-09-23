@@ -200,6 +200,8 @@ def current_test_data():
                         tests.start_time as test_start_time,  
                         scopes.name as scope_name,
                         scopes.start_time as scope_start_time,  
+                        tests.status as test_status,
+                        scopes.status as scope_status,
                         ROW_NUMBER() OVER (PARTITION BY setups.setup_id ORDER BY tests.start_time DESC) as row_num
                     FROM 
                         setups 
@@ -210,7 +212,7 @@ def current_test_data():
                     )
                     SELECT setup_id, setup_name, test_name, test_start_time, scope_name, scope_start_time  
                     FROM RankedTests 
-                    WHERE row_num = 1;
+                    WHERE row_num = 1 AND (test_status = 'running' OR scope_status = 'running');
                     """)
 
     data = cursor.fetchall()
@@ -225,6 +227,7 @@ def current_test_data():
 if __name__ == "__main__":        
     conn = get_db_connection()
     cur = conn.cursor()
+    cur.execute("SET timezone='UTC';")
     cur.execute(
         "TRUNCATE setups, scopes, tests, jenkinsinfo, failingtestcases RESTART IDENTITY;"
     )

@@ -25,7 +25,7 @@
                 <td>{{ setup.name }}</td>
 
                 <!-- SCOPE COLUMN -->
-                <td id="scopeNameElement_ {{ setup.setup_id }}">
+                <td id="scopeNameElement_{{ setup.setup_id }}">
                     {% if setup.setup_id in scopes %}
                         {% set latest_scope = scopes[setup.setup_id][-1] %}
                         {% if latest_scope.status == "running" %}

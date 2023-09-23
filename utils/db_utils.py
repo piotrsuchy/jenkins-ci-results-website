@@ -40,3 +40,39 @@ def tuple_to_dict(t, cursor):
     """Convert a tuple to a dictionary based on cursor description."""
     desc = cursor.description
     return {desc[col][0]: t[col] for col in range(len(t))}
+
+def get_latest_test_id(conn):
+    """
+    Fetch the latest test_id from the database.
+    """
+    cur = conn.cursor()
+    try:
+        query = "SELECT MAX(test_id) FROM tests;"
+        cur.execute(query)
+        result = cur.fetchone()
+        if result and result[0]:
+            return result[0]
+        return 0
+    except Exception as e:
+        print(f"Error fetching latest test_id: {e}")
+        return 0
+    finally:
+        cur.close()
+
+def get_latest_scope_id(conn):
+    """
+    Fetch the latest scope_id from the database.
+    """
+    cur = conn.cursor()
+    try:
+        query = "SELECT MAX(scope_id) FROM scopes;"
+        cur.execute(query)
+        result = cur.fetchone()
+        if result and result[0]:
+            return result[0]
+        return 0
+    except Exception as e:
+        print(f"Error fetching latest scope_id: {e}")
+        return 0
+    finally:
+        cur.close()

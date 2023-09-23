@@ -10,11 +10,11 @@ CREATE TABLE Scopes (
     scope_id SERIAL PRIMARY KEY,
     setup_id INT REFERENCES Setups(setup_id),
     name VARCHAR(255),
-    start_time TIMESTAMP,
-    end_time TIMESTAMP,
+    start_time TIMESTAMP with time zone,
+    end_time TIMESTAMP with time zone,
     completed_tests INT,
     total_tests INT,
-    status VARCHAR(50)
+    status TEXT NOT NULL DEFAULT 'running'
 );
 
 -- Tests Table
@@ -22,9 +22,9 @@ CREATE TABLE Tests (
     test_id SERIAL PRIMARY KEY,
     scope_id INT REFERENCES Scopes(scope_id),
     name VARCHAR(255),
-    start_time TIMESTAMP,
-    end_time TIMESTAMP,
-    status VARCHAR(50)
+    start_time TIMESTAMP with time zone,
+    end_time TIMESTAMP with time zone,
+    status TEXT DEFAULT 'running'
 );
 
 -- JenkinsInfo Table

@@ -1,5 +1,6 @@
 import requests, os
 import json, datetime
+import pytz
 from dotenv import load_dotenv
 
 # Import utilities
@@ -40,13 +41,15 @@ class PythonListener:
 
     def start_test(self, data, result):
         self.test_id += 1
-        self.test_start_time = str(datetime.datetime.now())
+        local_tz = pytz.timezone('Europe/Warsaw')
+        self.test_start_time = datetime.datetime.now(tz=local_tz).isoformat()
         self.test_name = str(data)
         test_data = self._prepare_test_data_start(data)
         self._post_test_data(test_data)
 
     def start_suite(self, data, result):
-        self.suite_start_time = str(datetime.datetime.now())
+        local_tz = pytz.timezone('Europe/Warsaw')
+        self.suite_start_time = datetime.datetime.now(tz=local_tz).isoformat()
         self.suite_name = str(data)
         setups = self._read_setups_from_config()
         suite_data = self._prepare_scope_data_start(setups, result)
