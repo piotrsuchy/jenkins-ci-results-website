@@ -65,14 +65,14 @@ def get_latest_scope_id(conn):
     """
     cur = conn.cursor()
     try:
-        query = "SELECT MAX(scope_id) FROM scopes;"
+        query = "SELECT MAX(scope_id) FROM scopes";
         cur.execute(query)
         result = cur.fetchone()
         if result and result[0]:
             return result[0]
         return 0
     except Exception as e:
-        print(f"Error fetching latest scope_id: {e}")
+        print(f"Error fetching latest running scope_id: {e}")
         return 0
     finally:
         cur.close()
