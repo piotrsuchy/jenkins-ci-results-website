@@ -191,29 +191,45 @@ def current_test_data():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Fetch the latest tests and scopes for each setup, and also fetch setup_id and start_times
-    cursor.execute("""WITH RankedTests AS (
-                    SELECT 
-                        setups.setup_id,
-                        setups.name as setup_name, 
-                        tests.name as test_name,
-                        tests.start_time as test_start_time,  
-                        scopes.name as scope_name,
-                        scopes.start_time as scope_start_time,  
-                        tests.status as test_status,
-                        scopes.status as scope_status,
-                        ROW_NUMBER() OVER (PARTITION BY setups.setup_id ORDER BY tests.start_time DESC) as row_num
-                    FROM 
-                        setups 
-                    LEFT JOIN 
-                        scopes ON setups.setup_id = scopes.setup_id 
-                    LEFT JOIN 
-                        tests ON scopes.scope_id = tests.scope_id
-                    )
-                    SELECT setup_id, setup_name, test_name, test_start_time, scope_name, scope_start_time  
-                    FROM RankedTests 
-                    WHERE row_num = 1 AND (test_status = 'running' OR scope_status = 'running');
-                    """)
+    # Use the new SQL Query
+    cursor.execute("""
+        WITH LatestScopes AS (
+            SELECT
+                s.setup_id,
+                s.scope_id,
+                s.name AS scope_name,
+                s.start_time AS scope_start_time,
+                s.status AS scope_status,
+                ROW_NUMBER() OVER (PARTITION BY s.setup_id ORDER BY s.start_time DESC) as row_num
+            FROM
+                scopes s
+        ),
+        LatestTests AS (
+            SELECT
+                t.scope_id,
+                t.name AS test_name,
+                t.start_time AS test_start_time,
+                t.status AS test_status,
+                ROW_NUMBER() OVER (PARTITION BY t.scope_id ORDER BY t.start_time DESC) as row_num
+            FROM
+                tests t
+        )
+        SELECT
+            ls.setup_id,
+            ls.scope_name,
+            ls.scope_start_time,
+            ls.scope_status,
+            lt.test_name,
+            lt.test_start_time,
+            lt.test_status
+        FROM
+            LatestScopes ls
+        LEFT JOIN
+            LatestTests lt ON ls.scope_id = lt.scope_id AND lt.row_num = 1
+        WHERE
+            ls.row_num = 1
+            AND (ls.scope_status = 'running' OR lt.test_status = 'running');
+    """)
 
     data = cursor.fetchall()
     results = [tuple_to_dict(t, cursor) for t in data]
@@ -222,6 +238,7 @@ def current_test_data():
     release_db_connection(conn)
     
     return jsonify(results)
+
 
 
 if __name__ == "__main__":        

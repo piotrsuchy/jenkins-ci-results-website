@@ -9,27 +9,37 @@ function computeDuration(startTime) {
 }
 
 function resetRow(setup_id) {
-    $(`#testNameElement_${setup_id}`).text("Nothing");
-    $(`#scopeNameElement_${setup_id}`).text("Nothing");
-    $(`#testNameElement_${setup_id}`).closest('tr').find('.test-duration').text("-");
-    $(`#testNameElement_${setup_id}`).closest('tr').find('.scope-duration').text("-");
+    $(`#testNameElement_${setup_id}`).text("Not running");
+    $(`#scopeNameElement_${setup_id}`).text("Not running");
+    $(`#testNameElement_${setup_id}`).closest('tr').find('.test-duration').text("---");
+    $(`#testNameElement_${setup_id}`).closest('tr').find('.scope-duration').text("---");
 }
+
+let runningSetups = new Set(); // Define runningSetups at the top level of your script
 
 function updateDuration() {
-    document.querySelectorAll(".test-duration").forEach(td => {
-        const startTime = td.getAttribute('data-start-time');
-        if (startTime) {  
-            td.innerText = computeDuration(startTime);
-        }
-    });
+    console.log("Updating durations...");
+    document.querySelectorAll(".test-duration, .scope-duration").forEach(td => {
 
-    document.querySelectorAll(".scope-duration").forEach(td => {
         const startTime = td.getAttribute('data-start-time');
-        if (startTime) {  
-            td.innerText = computeDuration(startTime);
+        const setupId = td.closest('tr').getAttribute('data-setup-id');
+        
+        console.log(`Start Time for setupId ${setupId}:`, startTime);
+        
+        if (runningSetups.has(parseInt(setupId))) {
+            const duration = computeDuration(startTime);
+            console.log(`Computed Duration for setupId ${setupId}:`, duration);
+            
+            // If duration is falsy (e.g. empty string, null, undefined), set to '-' as a fallback
+            td.innerText = duration || '-';
+            console.log(`Updated Duration Element for setupId ${setupId}:`, td);
+        } else {
+            console.log(`Setup ID ${setupId} is not in the runningSetups set.`);
         }
     });
 }
+
+
 
 // Extracting all the setup_ids from the setups_config.json
 const allSetupIds = [];
@@ -175,19 +185,31 @@ setInterval(function(){
     $.getJSON("/current_test_data", function(data) {
         console.log("Received data:", data);
 
-        // Reset all rows by default
-        allSetupIds.forEach(id => {
-            resetRow(id);
+        let currentlyRunningSetups = new Set();
+
+        for (let entry of data) {
+            currentlyRunningSetups.add(entry.setup_id);
+
+            // Update scope name and its duration
+            $(`#scopeNameElement_${entry.setup_id}`).text(entry.scope_name || "Nothing");
+            $(`#scopeNameElement_${entry.setup_id}`).closest('tr').find('.scope-duration').attr('data-start-time', entry.scope_start_time);
+
+            // Update test name and its duration
+            $(`#testNameElement_${entry.setup_id}`).text(entry.test_name || "Nothing");
+            $(`#testNameElement_${entry.setup_id}`).closest('tr').find('.test-duration').attr('data-start-time', entry.test_start_time);
+        }
+
+        runningSetups.forEach(setup_id => {
+            if (!currentlyRunningSetups.has(setup_id)) {
+                resetRow(setup_id);
+            }
         });
 
-        // Update rows for running setups
-        for (let entry of data) {
-            $(`#testNameElement_${entry.setup_id}`).text(entry.test_name || "Nothing");
-            $(`#scopeNameElement_${entry.setup_id}`).text(entry.scope_name || "Nothing");
-            $(`#testNameElement_${entry.setup_id}`).closest('tr').find('.test-duration').attr('data-start-time', entry.test_start_time);
-            $(`#testNameElement_${entry.setup_id}`).closest('tr').find('.scope-duration').attr('data-start-time', entry.scope_start_time);
-        }
+        runningSetups = currentlyRunningSetups;
+        updateDuration();
     });
 }, 3000);
+
+
 
 setInterval(updateDuration, 1000);

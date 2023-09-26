@@ -20,7 +20,7 @@
         </tr>
 
         {% for setup in setups %}
-            <tr>
+            <tr data-setup-id="{{ setup.setup_id }}">
                 <!-- SETUP COLUMN -->
                 <td>{{ setup.name }}</td>
 
@@ -31,10 +31,10 @@
                         {% if latest_scope.status == "running" %}
                             {{ latest_scope.name }}
                         {% else %}
-                            Nothing
+                        <span class="placeholder">Not running</span>
                         {% endif %}
                     {% else %}
-                        Nothing
+                        <span class="placeholder">Not running</span>
                     {% endif %}
                 </td>
 
@@ -43,7 +43,7 @@
                     {% if setup.setup_id in scopes and latest_scope.status == "running" %}
                         <span class="scope-duration" data-start-time="{{ latest_scope.start_time }}"></span>
                     {% else %}
-                        -
+                        <span class="scope-duration" data-start-time="-">---</span>
                     {% endif %}
                 </td>
 
@@ -57,10 +57,10 @@
                         {% if latest_test.status == "running" %}
                             {{ latest_test.name }}
                         {% else %}
-                            Nothing
+                            <span class="placeholder">Not running</span>
                         {% endif %}
                     {% else %}
-                        Nothing
+                        <span class="placeholder">Not running</span>
                     {% endif %}
                 </td>
 
@@ -69,7 +69,7 @@
                     {% if setup.setup_id in scopes and latest_scope.scope_id in tests and latest_test.status == "running" %}
                         <span class="test-duration" data-start-time="{{ latest_test.start_time }}"></span>
                     {% else %}
-                        -
+                        <span class="test-duration" data-start-time="-">---</span>
                     {% endif %}
                 </td>
 
