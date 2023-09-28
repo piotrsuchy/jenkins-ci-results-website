@@ -12,7 +12,6 @@ def get_local_ip():
         local_ip = "127.0.0.1"
     return local_ip
 
-
 def find_setup_by_ip(ip_address, setups):
     for setup in setups:
         if setup["ip"] == ip_address:

@@ -8,3 +8,4 @@ output.txt
 .env
 temporary_test/
 .vscode/
+count_lines.py

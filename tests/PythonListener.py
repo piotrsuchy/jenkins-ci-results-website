@@ -32,13 +32,20 @@ class PythonListener:
         self.test_name = None
         self.current_scope_id = 0
 
+        self.total_tests_in_scope = None
+        self.tests_completed = None
+
+        self.setups = self._read_setups_from_config()
         # Fetch the latest test_id from the database and use it as the starting point
         conn = self._get_db_connection()
         self.current_test_id = get_latest_test_id(conn)
         self.max_id = get_latest_scope_id(conn)
         release_db_connection(conn)
 
+        
     def start_suite(self, data, result):
+        self.total_tests_in_scope = len(list(data.all_tests))
+        self.tests_completed = 0
         self.max_id += 1
         self.running_scope_stack.append((self.max_id, data.name))
         self.current_scope_id = self.max_id
@@ -46,13 +53,12 @@ class PythonListener:
         local_tz = pytz.timezone('Europe/Warsaw')
         self.scope_start_time = datetime.datetime.now(tz=local_tz).isoformat()
         self.current_scope_name = str(data)
-        setups = self._read_setups_from_config()
-        suite_data = self._prepare_scope_data_start(setups, result)
+        suite_data = self._prepare_scope_data_start(result)
         self._post_scope_data(suite_data)
-        print(f"Self scope id: {self.current_scope_id}")
 
     def start_test(self, data, result):
         self.current_test_id += 1
+        print(f"PROGRESS: {self.show_progress()}")
         local_tz = pytz.timezone('Europe/Warsaw')
         self.test_start_time = datetime.datetime.now(tz=local_tz).isoformat()
         self.test_name = str(data)
@@ -60,6 +66,7 @@ class PythonListener:
         self._post_test_data(test_data)
 
     def end_test(self, data, result):
+        self.tests_completed += 1
         test_status = "pass" if result.passed else "fail"
         test_data = self._prepare_test_data_end(test_status)
         self._update_end_time(test_data)
@@ -96,26 +103,21 @@ class PythonListener:
             "status": test_status,
         }
 
-    def _prepare_scope_data_start(self, setups, result):
+    def find_matching_setup(self):
         local_ip = get_local_ip()
-        matching_setup = find_setup_by_ip(local_ip, setups)
-        conn = self._get_db_connection()
+        matching_setup = find_setup_by_ip(local_ip, self.setups)
+        if matching_setup is None:
+            matching_setup = self.setups[0]
+        return matching_setup["setup_id"]
 
-        if not matching_setup:
+    def _prepare_scope_data_start(self, result):
+        setup_id = self.find_matching_setup()
+        if setup_id is None:
             setup_id = 1
-            scope_name = self.current_scope_name
-        else:
-            setup_name = matching_setup["setup"]
-            scope_name = matching_setup["job_name"]
-            setup_id = get_setup_id_by_name(
-                setup_name, conn
-            ) 
-        
-        release_db_connection(conn)
 
         return {
             "setup_id": setup_id,
-            "name": scope_name,
+            "name": self.current_scope_name,
             "start_time": self.scope_start_time,
             "status": "running",
         }
@@ -150,3 +152,5 @@ class PythonListener:
     def _get_db_connection(self):
         return get_db_connection()  # Use pooled connection
 
+    def show_progress(self):
+        return f"{self.tests_completed}/{self.total_tests_in_scope}"
