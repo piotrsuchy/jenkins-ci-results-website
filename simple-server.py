@@ -3,8 +3,10 @@ from flask import Flask, request, render_template, jsonify
 
 # Import utilities
 from utils.db_utils import get_db_connection, tuple_to_dict, release_db_connection
+from progress_manager import ProgressManager
 
 app = Flask(__name__)
+progress_manager = ProgressManager()
 
 
 # filling setups table with records from config json
@@ -240,6 +242,18 @@ def current_test_data():
     return jsonify(results)
 
 
+@app.route('/update_progress/<string:setup_id>', methods=['POST'])
+def update_progress(setup_id):
+    data = request.json
+    print("Received data for update: ", data)
+    progress_manager.update_progress(setup_id, data)
+    return jsonify({"status": "success"})
+
+
+@app.route('/get_progress_state/', methods=['GET'])
+def get_progress_state():
+    return jsonify(progress_manager.get_progress_state())
+    
 
 if __name__ == "__main__":        
     conn = get_db_connection()

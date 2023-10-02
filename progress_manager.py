@@ -3,11 +3,9 @@ class ProgressManager:
         self._progress_state = {}
         
     def update_progress(self, setup_id, data):
-        if setup_id not in self._progress_state:
-            self._progress_state[setup_id] = {'completed_tests': 0, 'total_tests': 0}
+        completed_tests = data.get('completed_tests', 0)
+        total_tests = data.get('total_tests', 0)
+        self._progress_state[setup_id] = f"{completed_tests}/{total_tests}"
         
-        # Logic to update the progress state based on the provided data
-        # ...
-        
-    def get_progress(self, setup_id):
-        return self._progress_state.get(setup_id, {'completed_tests': 0, 'total_tests': 0})
+    def get_progress_state(self):
+        return self._progress_state

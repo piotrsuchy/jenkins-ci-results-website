@@ -36,6 +36,7 @@ class PythonListener:
         self.tests_completed = None
 
         self.setups = self._read_setups_from_config()
+        self.setup_id = self.find_matching_setup()
         # Fetch the latest test_id from the database and use it as the starting point
         conn = self._get_db_connection()
         self.current_test_id = get_latest_test_id(conn)
@@ -55,6 +56,7 @@ class PythonListener:
         self.current_scope_name = str(data)
         suite_data = self._prepare_scope_data_start(result)
         self._post_scope_data(suite_data)
+        self.update_progress()
 
     def start_test(self, data, result):
         self.current_test_id += 1
@@ -64,6 +66,7 @@ class PythonListener:
         self.test_name = str(data)
         test_data = self._prepare_test_data_start(data)
         self._post_test_data(test_data)
+        self.update_progress()
 
     def end_test(self, data, result):
         self.tests_completed += 1
@@ -87,6 +90,9 @@ class PythonListener:
             self.current_scope_id = self.running_scope_stack[-1][0]
             self.current_scope_name = self.running_scope_stack[-1][1]
         print(f"---------ENDING SUITE: {self.current_scope_id}")
+        self.tests_completed = 0
+        self.total_tests_in_scope = 0
+        self.update_progress()
 
     def _prepare_test_data_start(self, data):
         return {
@@ -102,13 +108,6 @@ class PythonListener:
             "id": f"{self.current_test_id}",
             "status": test_status,
         }
-
-    def find_matching_setup(self):
-        local_ip = get_local_ip()
-        matching_setup = find_setup_by_ip(local_ip, self.setups)
-        if matching_setup is None:
-            matching_setup = self.setups[0]
-        return matching_setup["setup_id"]
 
     def _prepare_scope_data_start(self, result):
         setup_id = self.find_matching_setup()
@@ -141,6 +140,17 @@ class PythonListener:
         conn = self._get_db_connection()
         release_db_connection(conn)  # Release the connection back to the pool
 
+    def update_progress(self):
+        url = f'http://127.0.0.1:5000/update_progress/{self.setup_id}'
+        data = {
+            'completed_tests': self.tests_completed,
+            'total_tests': self.total_tests_in_scope
+        }
+        response = requests.post(url, json=data)
+        print(f"Updating progress to: {self.tests_completed}/{self.total_tests_in_scope}")
+        if response.status_code != 200:
+            print("Failed to send progress update:", response.content)
+
     def _update_end_time(self, data):
         requests.put("http://127.0.0.1:5000/update_end_time", json=data)
 
@@ -154,3 +164,13 @@ class PythonListener:
 
     def show_progress(self):
         return f"{self.tests_completed}/{self.total_tests_in_scope}"
+
+    def find_matching_setup(self):
+        local_ip = get_local_ip()
+        matching_setup = find_setup_by_ip(local_ip, self.setups)
+        if matching_setup is None:
+            matching_setup = self.setups[0]
+        return matching_setup["setup_id"]
+
+    def get_setup_id(self):
+        return self.setup_id
