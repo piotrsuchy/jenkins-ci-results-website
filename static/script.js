@@ -11,6 +11,7 @@ function computeDuration(startTime) {
 function resetRow(setup_id) {
     $(`#testNameElement_${setup_id}`).text("Not running");
     $(`#scopeNameElement_${setup_id}`).text("Not running");
+    $(`#progressElement_${setup_id}`).text("0/0")
     $(`#testNameElement_${setup_id}`).closest('tr').find('.test-duration').text("---");
     $(`#testNameElement_${setup_id}`).closest('tr').find('.scope-duration').text("---");
 }
@@ -210,6 +211,17 @@ setInterval(function(){
     });
 }, 3000);
 
+setInterval(function () {
+    fetch('/get_progress_state')
+        .then(response => response.json())
+        .then(all_progress => {
+            for (const [setup_id, progress] of Object.entries(all_progress)) {
+                document.getElementById(`progressElement_${setup_id}`).textContent = progress || '0/0';
+            }
+        })
+        .catch(error => console.error('Error fetching progress:', error));
+
+}, 2000);
 
 
 setInterval(updateDuration, 1000);
