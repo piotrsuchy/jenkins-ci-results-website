@@ -60,7 +60,7 @@ class PythonListener:
 
     def start_test(self, data, result):
         self.current_test_id += 1
-        print(f"PROGRESS: {self.show_progress()}")
+        # print(f"PROGRESS: {self.show_progress()}")
         local_tz = pytz.timezone('Europe/Warsaw')
         self.test_start_time = datetime.datetime.now(tz=local_tz).isoformat()
         self.test_name = str(data)
@@ -75,7 +75,7 @@ class PythonListener:
         self._update_end_time(test_data)
 
     def end_suite(self, data, result):
-        print(f"---------ENDING SUITE: {self.current_scope_id}")
+        # print(f"---------ENDING SUITE: {self.current_scope_id}")
 
         scope_status = "pass" if result.passed else "fail"
         
@@ -83,13 +83,13 @@ class PythonListener:
         self._update_end_time(scope_data)
         self.running_scope_stack.pop()
         if not self.running_scope_stack:
-            print("The whole suite has been ended!")
+            # print("The whole suite has been ended!")
             self.current_scope_id = None
             self.current_scope_name = None
         else:
             self.current_scope_id = self.running_scope_stack[-1][0]
             self.current_scope_name = self.running_scope_stack[-1][1]
-        print(f"---------ENDING SUITE: {self.current_scope_id}")
+        # print(f"---------ENDING SUITE: {self.current_scope_id}")
         self.tests_completed = 0
         self.total_tests_in_scope = 0
         self.update_progress()
@@ -147,7 +147,7 @@ class PythonListener:
             'total_tests': self.total_tests_in_scope
         }
         response = requests.post(url, json=data)
-        print(f"Updating progress to: {self.tests_completed}/{self.total_tests_in_scope}")
+        # print(f"Updating progress to: {self.tests_completed}/{self.total_tests_in_scope}")
         if response.status_code != 200:
             print("Failed to send progress update:", response.content)
 

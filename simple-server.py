@@ -245,7 +245,7 @@ def current_test_data():
 @app.route('/update_progress/<string:setup_id>', methods=['POST'])
 def update_progress(setup_id):
     data = request.json
-    print("Received data for update: ", data)
+    # print("Received data for update: ", data)
     progress_manager.update_progress(setup_id, data)
     return jsonify({"status": "success"})
 
