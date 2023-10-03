@@ -22,7 +22,7 @@ def run_robot_tests(test_file_name):
     listener_file_path = os.path.join(project_root, "tests", "PythonListener.py")
 
     subprocess.run(
-        ["robot", "--listener", listener_file_path, test_file_path], env=os.environ
+        ["robot", "-l", "NONE", "-o", "NONE", "-r", "NONE", "--listener", listener_file_path, test_file_path], env=os.environ
     )
 
 
