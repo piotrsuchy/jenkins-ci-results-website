@@ -3,6 +3,7 @@ from flask import Flask, request, render_template, jsonify
 
 # Import utilities
 from utils.db_utils import get_db_connection, tuple_to_dict, release_db_connection
+from utils.jenkins_utils import fetch_data_for_setup
 from progress_manager import ProgressManager
 
 app = Flask(__name__)
@@ -253,8 +254,14 @@ def update_progress(setup_id):
 @app.route('/get_progress_state/', methods=['GET'])
 def get_progress_state():
     return jsonify(progress_manager.get_progress_state())
-    
 
+    
+@app.route('/jenkins_data/<int:setup_id>')
+def get_jenkins_data(setup_id):
+    data = fetch_data_for_setup(setup_id)
+    return jsonify(data)
+
+    
 if __name__ == "__main__":        
     conn = get_db_connection()
     cur = conn.cursor()
