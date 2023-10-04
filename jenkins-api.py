@@ -34,6 +34,7 @@ def get_latest_builds(job_name, setup_name):
     try:
         response = requests.get("http://janusz.emea.nsn-net.net:8080/job/" + job_name + "api/json?tree=builds[number,url,result,timestamp,duration,description]{0,10}", verify=False)
         response.raise_for_status()  # Raise an exception for HTTP errors
+        builds_info = []
         
         data = response.json()
         builds = data.get("builds", [])
@@ -50,16 +51,29 @@ def get_latest_builds(job_name, setup_name):
             test_results = extract_test_results(description)
             if test_results:
                 total_tests, passed_tests, failed_tests = test_results
-                print("-"*20 + "PIPELINE: ", setup_name + "-"*20)
-                print(f"Build #{number} - Status: {status}")
-                print(f"URL: {url}")
-                print(f"Started at: {convert_timestamp_to_local_time(timestamp)} (seconds since epoch)")
-                print(f"Duration: {format_duration(duration)} seconds")
-                print(f"Total Tests: {total_tests}, Passed Tests: {passed_tests}, Failed Tests: {failed_tests}")
-                print("-" * 50)
+                build_info = {
+                    "setup_name": setup_name,
+                    "build_number": number,
+                    "status": status,
+                    "url": url,
+                    "started_at": convert_timestamp_to_local_time(timestamp),
+                    "duration": format_duration(duration),
+                    "total_tests": total_tests,
+                    "passed_tests": passed_tests,
+                    "failed_tests": failed_tests
+                }
+                builds_info.append(build_info)
             else:
-                print(f"Build #{number} - Status: {status} (Test results not found in description)")
-                print("-" * 50)
+                build_info = {
+                    "setup_name": setup_name,
+                    "build_number": number,
+                    "status": status,
+                    "url": url,
+                    "started_at": convert_timestamp_to_local_time(timestamp),
+                    "duration": format_duration(duration)
+                }
+                builds_info.append(build_info)
+        return builds_info
     except requests.exceptions.RequestException as e:
         # Catching any HTTP errors
         print(f"The URL for {setup_name} doesn't exist or there was an error fetching it.")
@@ -83,10 +97,15 @@ def format_duration(seconds):
 
 def main():
     pipelines = get_pipelines()
+    all_setups_data = {}
+    
     for pipeline in pipelines:
         pipeline_job_name = pipeline["job_name"]
         pipeline_setup_name = pipeline["setup"]
-        get_latest_builds(pipeline_job_name, pipeline_setup_name)
+        builds_info = get_latest_builds(pipeline_job_name, pipeline_setup_name)
+        all_setups_data[pipeline_setup_name] = builds_info
+
+    print(json.dumps(all_setups_data, indent=4))
 
 if __name__ == "__main__":
     main()
