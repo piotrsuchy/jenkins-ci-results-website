@@ -1,6 +1,16 @@
 import re
 import requests
+import json
 from utils.db_utils import get_db_connection, release_db_connection
+
+def get_job_name_for_setup_id(setup_id):
+    with open('setups_config.json', 'r') as file:
+        data = json.load(file)
+
+    for pipeline in data["pipelines"]:
+        if pipeline["setup_id"] == setup_id:
+            return pipeline["job_name"]
+    return None
 
 def extract_test_results(description):
     """
@@ -16,7 +26,7 @@ def extract_test_results(description):
 def get_latest_builds(job_name):
     results = []
     try:
-        response = requests.get("http://janusz.emea.nsn-net.net:8080/job/" + job_name + "api/json?tree=builds[number,url,result,timestamp,duration,description]{0,10}", verify=False)
+        response = requests.get("http://janusz.emea.nsn-net.net:8080/job/" + job_name + "/api/json?tree=builds[number,url,result,timestamp,duration,description]{0,10}", verify=False)
         response.raise_for_status()
         
         data = response.json()
@@ -41,13 +51,8 @@ def get_latest_builds(job_name):
 
 def fetch_data_for_setup(setup_id):
     # Fetch setup name for given setup_id from database
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT name FROM setups WHERE setup_id = %s;", (setup_id,))
-    setup_name = cursor.fetchone()[0]
-    cursor.close()
-    release_db_connection(conn)
+    job_name = get_job_name_for_setup_id(setup_id)
     
     # Fetch Jenkins data for the given setup
     # Note: This assumes that setup_name is equivalent to Jenkins job_name
-    return get_latest_builds(setup_name)
+    return get_latest_builds(job_name)

@@ -32,6 +32,7 @@ def get_latest_builds(job_name, setup_name):
     """
     # Updated Jenkins URL for the specified job 
     try:
+        print(f"URL: http://janusz.emea.nsn-net.net:8080/job/" + job_name + "api/json?tree=builds[number,url,result,timestamp,duration,description]{0,10}")
         response = requests.get("http://janusz.emea.nsn-net.net:8080/job/" + job_name + "api/json?tree=builds[number,url,result,timestamp,duration,description]{0,10}", verify=False)
         response.raise_for_status()  # Raise an exception for HTTP errors
         builds_info = []
