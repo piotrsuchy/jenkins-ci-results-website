@@ -169,6 +169,14 @@ def update_end_time():
     try:
         update_query = f"UPDATE {table_name} SET end_time = NOW(), status = %s WHERE {table_name[:-1]}_id = %s;"
         cur.execute(update_query, (data["status"], data["id"]))
+        cur.execute(update_query, (data["status"], data["id"]))
+        if cur.rowcount == 0:
+            return jsonify({
+                "message": f"No {table_name[:-1].capitalize()} found with provided ID or no update needed.",
+                "status": "warning",
+                "code": 404
+            }), 404
+
         conn.commit()
 
         response = {

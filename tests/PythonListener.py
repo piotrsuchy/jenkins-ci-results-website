@@ -21,9 +21,6 @@ class PythonListener:
 
     def __init__(self, interval=10):
         self.interval = interval
-        # Initial - if first scope overall:
-        self.current_test_id = 0
-        self.max_id = 0
 
         self.test_start_time = None
         self.scope_start_time = None
@@ -59,8 +56,10 @@ class PythonListener:
         self.update_progress()
 
     def start_test(self, data, result):
-        self.current_test_id += 1
-        # print(f"PROGRESS: {self.show_progress()}")
+        # print(f"STARTING TEST WITH ID: {self.current_test_id}")
+        conn = self._get_db_connection()
+        self.current_test_id = get_latest_test_id(conn) + 1
+        release_db_connection(conn)
         local_tz = pytz.timezone('Europe/Warsaw')
         self.test_start_time = datetime.datetime.now(tz=local_tz).isoformat()
         self.test_name = str(data)
