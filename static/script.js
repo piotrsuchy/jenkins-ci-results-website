@@ -182,6 +182,56 @@ for (const pipeline of setupsConfig.pipelines) {
     allSetupIds.push(pipeline.setup_id);  // Assuming 'setup' is the unique identifier for each pipeline
 }
 
+function showPopup(setupId) {
+    fetch(`/jenkins_data/${setupId}`)
+    .then(response => response.json())
+    .then(data => {
+        let buildsContent = document.getElementById(`buildsContent_${setupId}`);
+        buildsContent.innerHTML = ""; // Clear previous data
+
+        data.forEach(build => {
+            let buildInfo = `
+                <h3>URL: <a href="${build.url}" target="_blank">${build.url}</a></h3>
+                <p>Tests: ${build.passed_tests} / ${build.total_tests}</p>
+                <p>Date: ${formatDate(build.timestamp)}</p>
+                <p>Duration: ${formatDuration(build.duration)}</p>
+                <hr>
+            `;
+            buildsContent.innerHTML += buildInfo;
+        });
+
+        document.getElementById(`myPopup_${setupId}`).style.display = "block";
+    });
+}
+
+function closePopup(setupId) {
+    document.getElementById(`myPopup_${setupId}`).style.display = "none";
+}
+
+// ... [rest of the JavaScript code remains unchanged]
+
+
+function formatDate(timestamp) {
+    const date = new Date(timestamp * 1000);
+    const hours = padNumber(date.getHours());
+    const minutes = padNumber(date.getMinutes());
+    const seconds = padNumber(date.getSeconds());
+    return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()} ${hours}:${minutes}:${seconds}`;
+}
+
+function padNumber(num) {
+    return num < 10 ? '0' + num : num;
+}
+
+function formatDuration(duration) {
+    const hours = Math.floor(duration / 3600);
+    const minutes = Math.floor((duration % 3600) / 60);
+    const seconds = Math.floor(duration % 60);
+    return `${padNumber(hours)}:${padNumber(minutes)}:${padNumber(seconds)}`;
+}
+
+
+
 setInterval(function(){
     $.getJSON("/current_test_data", function(data) {
         console.log("Received data:", data);

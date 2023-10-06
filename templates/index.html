@@ -15,8 +15,8 @@
             <th>PROGRESS</th>
             <th>TEST</th>
             <th>TEST DURATION</th>
-            <th>LAST RUNS</th>
             <th>FAILING TCs</th>
+            <th>LAST BUILDS</th>
         </tr>
 
         {% for setup in setups %}
@@ -74,15 +74,24 @@
                     {% endif %}
                 </td>
 
-                <!-- LAST RUNS COLUMN -->
-                <td>
-                    <div class="scrollable"></div>
-                </td>
-
                 <!-- FAILING TCs COLUMN -->
                 <td>
-                    <div class="scrollable"></div>
                 </td>
+
+                <!-- LAST RUNS COLUMN -->
+                <td>
+                    <div class="button-container">
+                        <button class="myButton" onclick="showPopup({{ setup.setup_id }})">View Latest Builds</button>
+                    </div>
+                    <!-- The Popup for this particular setup -->
+                    <div id="myPopup_{{ setup.setup_id }}" class="popup">
+                        <div class="popup-content">
+                            <span class="close" onclick="closePopup({{ setup.setup_id }})">&times;</span>
+                            <div id="buildsContent_{{ setup.setup_id }}"></div>
+                        </div>
+                    </div>
+                </td>
+
             </tr>
         {% endfor %}
 

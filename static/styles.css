@@ -13,6 +13,8 @@ td {
     border: 1px solid grey;
     padding: 5px 8px;
     text-align: left;
+    line-height: 10px;
+    vertical-align: middle;
     max-width: 16.66%;
 }
 
@@ -25,10 +27,87 @@ td:first-child {
 
 th {
     background-color: grey;
+    border: 1px solid yellowgreen;
 }
 
 .scrollable {
     height: 60px;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+.placeholder {
+    color: #888; /* This is just an example, you can choose any color */
+    font-style: italic;
+}
+
+.button-container {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: center; /* Horizontally center the content */
+    align-items: center;     /* Vertically center the content */
+    height: 20px;            /* Adjust this value based on your needs */
+}
+
+.myButton {
+    background-color: yellowgreen;   /* Match the text color of the table for consistency */
+    border: 2px solid grey;  /* This gives it a defined boundary */
+    color: black;            /* Black text to contrast with the yellowgreen background */
+    padding: 8px 16px;       /* Slightly reduced padding for better fit */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 8px;      /* Reduced border-radius for a more uniform look with the table */
+    transition: background-color 0.3s, color 0.3s; /* Transition for color as well */
+}
+
+.myButton:hover {
+    background-color: grey;  /* Using grey to match with the table headers */
+    color: yellowgreen;      /* Keep the text color consistent when hovered */
+}
+
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow-y: scroll;
+}
+
+.popup-content {
+    background-color: black; /* Dark background for the popup */
+    color: yellowgreen;      /* Color for the text inside the popup */
+    margin: 10% auto;        /* A bit more space on the top */
+    padding: 20px;
+    border: 2px solid grey;  /* Border to match the button and table */
+    width: 50%;
+    border-radius: 8px;      /* Add some border radius for a smoother look */
+    word-wrap: break-word; /* Handle long URLs */
+    line-height: 1.5; /* Increase spaces between lines */
+}
+
+.popup-content a {
+    color: yellowgreen;
+    text-decoration: underline;
+    overflow-wrap: break-word;
+}
+
+.close {
+    color: yellowgreen;      /* To match the primary color scheme */
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: grey;             /* A softer color when hovering over the close button */
 }
