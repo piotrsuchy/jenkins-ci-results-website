@@ -3,29 +3,24 @@
 This project is a prototype of a web server that will contain live-results for automated tests on CI setups.
 The tests are being automatically run in Robot Framework.
 
+## CURRENT VIEW
+
+![Current View of the website](media/current_view.png)
+
 ## TODO
 
+- center View Latest Builds button vertically
+- figure out how to get setup_id by ip with dupliating ips
 - links to karczoch logs
-- tests: with a few scopes in a row for example
-- create failingtestcases table filled with consistent fails from the last builds
-- progress bar
-- visualisation on the website
+- Suites, instead of Scopes
+- failing test cases from the current build column
+- take IPs from jenkins api (console output of a job) instead of hard coding it in json
 
-### My starting requirements for the web server
-
-Information we need is:
-
-- setup IP or job name (like AT, ST etc.) - will be taken from jenkins parameters
-- build being tested - robot framework listener
-- test suite being tested - robot framework listener
-- progress (which TC is being tested out of how many) - robot framework listener
-- results - could be taken from either one
 
 ### Summary of the project, requirements from others
 
 Live view of the setups, visualised altogether on one page
 Content:
-
 - setup name
 - which scope is being run
 - jenkins info (last few runs, queue, status, stats and duration of tests)
@@ -51,7 +46,7 @@ Currently the json file contains fields such as:
 
 Using postgresql@15 run the following commands, first one in any normal terminal, then in the psql cli.
 
-```bash
+```
 psql -U postgres
 CREATE DATABASE ci_monitor_db;
 \c ci_monitor_db;
