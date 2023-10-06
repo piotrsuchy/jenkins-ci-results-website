@@ -30,7 +30,7 @@
       "job_name": "CI_5G_robot_AVQL_Regression_Tests_stabi_branch_rexIO/",
       "ip": "10.83.204.180",
       "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Regression_Tests_stabi_branch_rexIO/",
-      "comment": "raz na tydzień"
+      "comment": "Once a week"
     },
     {
       "setup": "VM1 - Smoke Tests",
@@ -62,7 +62,7 @@
       "job_name": "CI_5G_robot_AVQL_Acceptance_Tests_stabi_branch_rexIO/",
       "ip": "10.83.204.181",
       "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Acceptance_Tests_stabi_branch_rexIO/",
-      "comment": "Raz na tydzień"
+      "comment": "Once a week"
     },
     {
       "setup": "VM4 - Regression BIST Tests",
@@ -86,7 +86,7 @@
       "job_name": "CI_5G_robot_AVQL_Regression_Tests_CRT_Linux_rexIO/",
       "ip": "10.83.204.232",
       "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Regression_Tests_CRT_Linux_rexIO/",
-      "comment": "17 buildów, raz na parę dni"
+      "comment": "Once every few days"
     },
     {
       "setup": "VM5 - Regression Tests Linux stabi",
@@ -94,7 +94,7 @@
       "job_name": "CI_5G_robot_AVQL_Regression_Tests_Linux_stabi_rexIO/",
       "ip": "10.83.204.232",
       "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Regression_Tests_Linux_stabi_rexIO/",
-      "comment": "17 buildów raz na tydzień"
+      "comment": "Once a week"
     },
     {
       "setup": "VM7 - Startup Reliability Tests",
@@ -102,7 +102,7 @@
       "job_name": "CI_5G_robot_AVQL_Startup_Reliability_Tests_rexIO/",
       "ip": "10.83.206.68",
       "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Startup_Reliability_Tests_rexIO/",
-      "comment": "Raz na 12 godzin"
+      "comment": "Every 12 hours"
     },
     {
       "setup": "VM12 - Regression CRT Alarms",
@@ -110,7 +110,7 @@
       "job_name": "CI_5G_robot_AVQL_Regression_Tests_CRT_Alarms_rexIO/",
       "ip": "10.83.204.109",
       "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Regression_Tests_CRT_Alarms_rexIO/",
-      "comment": "od 5 sierpnia raz na parę dni"
+      "comment": "Since 5th august every few days"
     },
     {
       "setup": "VM14 - Smoke Tests - A101",
