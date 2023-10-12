@@ -1,100 +1,14 @@
-import psycopg2, json
-from flask import Flask, request, render_template, jsonify
+import psycopg2
+from flask import Blueprint, request, jsonify
+from flask import current_app
 
 # Import utilities
-from utils.db_utils import get_db_connection, tuple_to_dict, release_db_connection
-from utils.jenkins_utils import fetch_data_for_setup
-from progress_manager import ProgressManager
+from ..utils.db_utils import get_db_connection, tuple_to_dict, release_db_connection
 
-app = Flask(__name__)
-progress_manager = ProgressManager()
+api = Blueprint('api', __name__)
 
 
-# filling setups table with records from config json
-def populate_setups_table():
-    conn = get_db_connection()
-    cur = conn.cursor()
-
-    # Check if table is empty
-    cur.execute("SELECT COUNT(*) FROM setups;")
-    count = cur.fetchone()[0]
-    if count > 0:
-        print("Setups table already populated, skipping initialization.")
-        cur.close()
-        release_db_connection(conn)
-        return
-
-    with open("setups_config.json") as f:
-        config = json.load(f)
-
-    for pipeline in config["pipelines"]:
-        insert_query = psycopg2.sql.SQL(
-            "INSERT INTO setups (name, comment) VALUES (%s, %s);"
-        )
-        cur.execute(insert_query, (pipeline["setup"], pipeline.get("comment", "")))
-
-    conn.commit()
-    cur.close()
-    release_db_connection(conn)
-
-test_results = []
-
-
-@app.route("/")
-def index():
-    conn = get_db_connection()
-
-    # Fetch setups from the database
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM setups;")
-    setups = [tuple_to_dict(row, cursor) for row in cursor.fetchall()]
-
-    cursor.execute("SELECT * FROM scopes;")
-    scopes_list = [tuple_to_dict(row, cursor) for row in cursor.fetchall()]
-
-    # Create a dictionary with setup_id as key and its scopes as values
-    scopes = {}
-    for scope in scopes_list:
-        if scope["setup_id"] in scopes:
-            scopes[scope["setup_id"]].append(scope)
-        else:
-            scopes[scope["setup_id"]] = [scope]
-
-    cursor.execute("SELECT * FROM tests;")
-    tests_list = [tuple_to_dict(row, cursor) for row in cursor.fetchall()]
-
-    # Create a dictionary with scope_id as key and its test as values
-    tests = {}
-    for test in tests_list:
-        if test["scope_id"] in tests:
-            tests[test["scope_id"]].append(test)
-        else:
-            tests[test["scope_id"]] = [test]
-
-    cursor.close()
-    release_db_connection(conn)
-
-    return render_template("index.html", setups=setups, scopes=scopes, tests=tests)
-
-
-@app.route("/post_message", methods=["POST"])
-def post_message():
-    message = request.form.get("message")
-    progress = request.form.get("progress")
-    suite_name, test_name, status, timestamp = message.split(", ")
-    test_results.append(
-        {
-            "suite_name": suite_name.split(": ")[1],
-            "test_name": test_name.split(": ")[1],
-            "status": status.split(": ")[1],
-            "timestamp": timestamp.split(": ")[1],
-            "progress": progress,
-        }
-    )
-    return "Message received", 200
-
-
-@app.route("/post_test_results", methods=["POST"])
+@api.route("/post_test_results", methods=["POST"])
 def post_test_results():
     data = request.get_json()
 
@@ -114,7 +28,7 @@ def post_test_results():
     return {"message": "Test results written to database", "test_id": test_id}, 200
 
 
-@app.route("/post_scope_results", methods=["POST"])
+@api.route("/post_scope_results", methods=["POST"])
 def post_scope_results():
     data = request.get_json()
     response = {}
@@ -155,7 +69,7 @@ def post_scope_results():
     }), 200
 
 
-@app.route("/update_end_time", methods=["PUT"])
+@api.route("/update_end_time", methods=["PUT"])
 def update_end_time():
     data = request.get_json()
     table_name = data["table_name"]  
@@ -197,7 +111,7 @@ def update_end_time():
     return jsonify(response), response["code"]
 
 
-@app.route("/current_test_data", methods=["GET"])
+@api.route("/current_test_data", methods=["GET"])
 def current_test_data():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -251,35 +165,14 @@ def current_test_data():
     return jsonify(results)
 
 
-@app.route('/update_progress/<string:setup_id>', methods=['POST'])
+@api.route('/update_progress/<string:setup_id>', methods=['POST'])
 def update_progress(setup_id):
     data = request.json
     # print("Received data for update: ", data)
-    progress_manager.update_progress(setup_id, data)
+    current_app.progress_manager.update_progress(setup_id, data)
     return jsonify({"status": "success"})
 
 
-@app.route('/get_progress_state/', methods=['GET'])
+@api.route('/get_progress_state/', methods=['GET'])
 def get_progress_state():
-    return jsonify(progress_manager.get_progress_state())
-
-    
-@app.route('/jenkins_data/<int:setup_id>')
-def get_jenkins_data(setup_id):
-    data = fetch_data_for_setup(setup_id)
-    return jsonify(data)
-
-    
-if __name__ == "__main__":        
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SET timezone='UTC';")
-    cur.execute(
-        "TRUNCATE setups, scopes, tests, jenkinsinfo, failingtestcases RESTART IDENTITY;"
-    )
-    conn.commit()
-    cur.close()
-    release_db_connection(conn)
-
-    populate_setups_table()
-    app.run(port=5000, debug=True)
+    return jsonify(current_app.progress_manager.get_progress_state())

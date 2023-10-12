@@ -14,13 +14,12 @@ The tests are being automatically run in Robot Framework.
 - links to karczoch logs
 - Suites, instead of Scopes
 - failing test cases from the current build column
-- take IPs from jenkins api (console output of a job) instead of hard coding it in json
-
 
 ### Summary of the project, requirements from others
 
 Live view of the setups, visualised altogether on one page
 Content:
+
 - setup name
 - which scope is being run
 - jenkins info (last few runs, queue, status, stats and duration of tests)
@@ -46,7 +45,7 @@ Currently the json file contains fields such as:
 
 Using postgresql@15 run the following commands, first one in any normal terminal, then in the psql cli.
 
-```
+```bash
 psql -U postgres
 CREATE DATABASE ci_monitor_db;
 \c ci_monitor_db;

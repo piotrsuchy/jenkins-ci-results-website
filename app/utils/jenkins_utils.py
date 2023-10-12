@@ -1,7 +1,6 @@
 import re
 import requests
 import json
-from utils.db_utils import get_db_connection, release_db_connection
 
 def get_job_name_for_setup_id(setup_id):
     with open('setups_config.json', 'r') as file:
@@ -54,5 +53,4 @@ def fetch_data_for_setup(setup_id):
     job_name = get_job_name_for_setup_id(setup_id)
     
     # Fetch Jenkins data for the given setup
-    # Note: This assumes that setup_name is equivalent to Jenkins job_name
     return get_latest_builds(job_name)

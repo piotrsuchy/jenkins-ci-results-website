@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 # Import utilities
 from utils.general_utils import get_local_ip, find_setup_by_ip
 from utils.db_utils import (
-    get_setup_id_by_name,
     get_db_connection,
     release_db_connection,
     get_latest_test_id,
