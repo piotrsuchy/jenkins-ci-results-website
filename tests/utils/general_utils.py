@@ -1,7 +1,6 @@
 # general utility functions
 
 import socket
-import json
 
 
 def get_local_ip():
