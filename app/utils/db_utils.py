@@ -1,8 +1,6 @@
 # db_utils.py
 
 # utility functions related to databases
-import psycopg2
-from psycopg2 import sql
 import os
 from dotenv import load_dotenv
 from psycopg2.pool import SimpleConnectionPool
