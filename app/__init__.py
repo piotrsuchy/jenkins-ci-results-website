@@ -22,3 +22,4 @@ def create_app():
     initialize_database()
 
     return app
+

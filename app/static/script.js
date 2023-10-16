@@ -183,7 +183,7 @@ for (const pipeline of setupsConfig.pipelines) {
 }
 
 function showPopup(setupId) {
-    fetch(`/jenkins_data/${setupId}`)
+    fetch(`/api/jenkins_data/${setupId}`)
     .then(response => response.json())
     .then(data => {
         let buildsContent = document.getElementById(`buildsContent_${setupId}`);
@@ -233,7 +233,7 @@ function formatDuration(duration) {
 
 
 setInterval(function(){
-    $.getJSON("/current_test_data", function(data) {
+    $.getJSON("/api/current_test_data", function(data) {
         console.log("Received data:", data);
 
         let currentlyRunningSetups = new Set();
@@ -262,7 +262,7 @@ setInterval(function(){
 }, 3000);
 
 setInterval(function () {
-    fetch('/get_progress_state')
+    fetch('/api/get_progress_state')
         .then(response => response.json())
         .then(all_progress => {
             for (const [setup_id, progress] of Object.entries(all_progress)) {
