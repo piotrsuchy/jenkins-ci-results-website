@@ -4,8 +4,8 @@ import pytz
 from dotenv import load_dotenv
 
 # Import utilities
-from utils.general_utils import get_local_ip, find_setup_by_ip
-from utils.db_utils import (
+from app.utils.general_utils import find_setup_by_hostname
+from app.utils.db_utils import (
     get_db_connection,
     release_db_connection,
     get_latest_test_id,
@@ -38,10 +38,12 @@ class PythonListener:
         self.current_test_id = get_latest_test_id(conn)
         self.max_id = get_latest_scope_id(conn)
         release_db_connection(conn)
+        
+        self.server_address = os.environ.get("CI_MONITOR_SERVER_ADDRESS")
 
         
     def start_suite(self, data, result):
-        self.total_tests_in_scope = len(list(data.all_tests))
+        self.total_tests_in_scope = len(list(data.tests))
         self.tests_completed = 0
         self.max_id += 1
         self.running_scope_stack.append((self.max_id, data.name))
@@ -127,10 +129,10 @@ class PythonListener:
         }
 
     def _post_test_data(self, test_data):
-        requests.post("http://127.0.0.1:5000/post_test_results", json=test_data)
+        requests.post(f"http://{self.server_address}/api/post_test_results", json=test_data)
 
     def _post_scope_data(self, scope_data):
-        response = requests.post("http://127.0.0.1:5000/post_scope_results", json=scope_data)
+        response = requests.post(f"http://{self.server_address}/api/post_scope_results", json=scope_data)
         if response.status_code == 200:
             resp_json = response.json()
             if "scope_id" in resp_json:
@@ -139,7 +141,7 @@ class PythonListener:
         release_db_connection(conn)  # Release the connection back to the pool
 
     def update_progress(self):
-        url = f'http://127.0.0.1:5000/update_progress/{self.setup_id}'
+        url = f'http://{self.server_address}/api/update_progress/{self.setup_id}'
         data = {
             'completed_tests': self.tests_completed,
             'total_tests': self.total_tests_in_scope
@@ -150,7 +152,7 @@ class PythonListener:
             print("Failed to send progress update:", response.content)
 
     def _update_end_time(self, data):
-        requests.put("http://127.0.0.1:5000/update_end_time", json=data)
+        requests.put(f"http://{self.server_address}/api/update_end_time", json=data)
 
     def _read_setups_from_config(self):
         tests_dir = os.path.dirname(os.path.abspath(__file__))
@@ -164,9 +166,9 @@ class PythonListener:
         return f"{self.tests_completed}/{self.total_tests_in_scope}"
 
     def find_matching_setup(self):
-        local_ip = get_local_ip()
-        matching_setup = find_setup_by_ip(local_ip, self.setups)
+        matching_setup = find_setup_by_hostname(self.setups)
         if matching_setup is None:
+            print(f"Didn't find any matching setups!!!")
             matching_setup = self.setups[0]
         return matching_setup["setup_id"]
 
