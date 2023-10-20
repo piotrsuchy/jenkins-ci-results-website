@@ -1,5 +1,3 @@
-# db_utils.py
-
 # utility functions related to databases
 import os
 from dotenv import load_dotenv
@@ -10,7 +8,7 @@ load_dotenv()
 # Setting up the Connection Pool
 DATABASE_POOL = SimpleConnectionPool(
     minconn=1,
-    maxconn=5,
+    maxconn=20,
     dbname=os.environ.get("DB_NAME"),
     user=os.environ.get("DB_USER"),
     password=os.environ.get("DB_PASS"),
