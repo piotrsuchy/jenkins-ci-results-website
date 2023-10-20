@@ -1,6 +1,6 @@
 import psycopg2, json
-from ..utils.db_utils import get_db_connection, release_db_connection
 from psycopg2 import sql
+from ..utils.db_utils import get_db_connection, release_db_connection
 
 def initialize_database():
     conn = get_db_connection()
