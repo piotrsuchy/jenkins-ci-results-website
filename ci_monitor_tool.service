@@ -1,0 +1,12 @@
+[Unit]
+Description=Gunicorn instance to serve ci_monitor_tool
+After=network.target
+
+[Service]
+User=hw
+Group=hw
+WorkingDirectory=/home/hw/pci_tools/ci_jenkins_monitor
+ExecStart=/home/hw/pci_tools/ci_jenkins_monitor/venv/bin/gunicorn -w 1 -b 0.0.0.0:8000 run:app
+
+[Install]
+WantedBy=multi-user.target
