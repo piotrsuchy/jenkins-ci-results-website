@@ -173,7 +173,23 @@ const setupsConfig = {
       "ip": "10.83.207.3",
       "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Acceptance_Tests_rexIO_A101/",
       "comment": ""
-    }
+    },
+    {
+      "setup": "VM17 - DEBUG",
+      "setup_id": 17,
+      "job_name": "CI_5G_robot_AVQL_Acceptance_Tests_rexIO_A101/",
+      "ip": "10.83.207.37",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Acceptance_Tests_rexIO_A101/",
+      "comment": ""
+    },
+    {
+      "setup": "VM22 - DEBUG",
+      "setup_id": 18,
+      "job_name": "CI_5G_robot_AVQL_Acceptance_Tests_rexIO_A101/",
+      "ip": "10.83.204.93",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Acceptance_Tests_rexIO_A101/",
+      "comment": ""
+    },
   ]
 };
 
@@ -183,8 +199,20 @@ for (const pipeline of setupsConfig.pipelines) {
 }
 
 function showPopup(setupId) {
-    fetch(`/api/jenkins_data/${setupId}`)
-    .then(response => response.json())
+    fetch(`/jenkins_data/${setupId}`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+    })
+    .then(data => {
+        try {
+            return JSON.parse(data);
+        } catch (e) {
+            throw new Error("Failed to parse JSON");
+        }
+    })
     .then(data => {
         let buildsContent = document.getElementById(`buildsContent_${setupId}`);
         buildsContent.innerHTML = ""; // Clear previous data
@@ -201,8 +229,12 @@ function showPopup(setupId) {
         });
 
         document.getElementById(`myPopup_${setupId}`).style.display = "block";
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
     });
 }
+
 
 function closePopup(setupId) {
     document.getElementById(`myPopup_${setupId}`).style.display = "none";
@@ -259,7 +291,7 @@ setInterval(function(){
         runningSetups = currentlyRunningSetups;
         updateDuration();
     });
-}, 3000);
+}, 1000);
 
 setInterval(function () {
     fetch('/api/get_progress_state')
@@ -271,7 +303,7 @@ setInterval(function () {
         })
         .catch(error => console.error('Error fetching progress:', error));
 
-}, 2000);
+}, 1000);
 
 
 setInterval(updateDuration, 1000);

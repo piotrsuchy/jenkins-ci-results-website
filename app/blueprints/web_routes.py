@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, jsonify
 # Import utilities
 from ..utils.db_utils import get_db_connection, tuple_to_dict, release_db_connection
 from ..utils.jenkins_utils import fetch_data_for_setup
+from ..progress_manager import ProgressManager
 
 web = Blueprint('web', __name__)
 

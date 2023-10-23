@@ -2,7 +2,7 @@
   "pipelines": [
     {
       "setup": "LOCALHOST",
-      "hostname": "PLKR-PZPCI-VM22",
+      "hostname": "None",
       "setup_id": 1,
       "job_name": "CI_5G_robot_AVQL_Regression_Tests_CIT_RFP_rexIO",
       "ip": "127.0.0.1",
