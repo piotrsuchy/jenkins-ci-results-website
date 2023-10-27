@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from psycopg2.pool import SimpleConnectionPool
 
-load_dotenv()
+load_dotenv(dotenv_path="C:/Users/plkrhw/pci_tools/ci_jenkins_monitor/.env")
 
 # Setting up the Connection Pool
 DATABASE_POOL = SimpleConnectionPool(
@@ -18,6 +18,11 @@ DATABASE_POOL = SimpleConnectionPool(
 
 
 def get_db_connection():
+    # print("NAME", os.environ.get("DB_NAME"))
+    # print("USER", os.environ.get("DB_USER"))
+    # print("PASS", os.environ.get("DB_PASS"))
+    # print("HOST", os.environ.get("DB_HOST"))
+    # print("PORT", os.environ.get("DB_PORT"))
     return DATABASE_POOL.getconn()
 
 
