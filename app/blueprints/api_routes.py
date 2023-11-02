@@ -153,11 +153,12 @@ def current_test_data():
             LatestTests lt ON ls.scope_id = lt.scope_id AND lt.row_num = 1
         WHERE
             ls.row_num = 1
-            AND (ls.scope_status = 'running' OR lt.test_status = 'running');
+            AND (ls.scope_status = 'startup' OR ls.scope_status = 'running' OR ls.scope_status = 'teardown' OR lt.test_status = 'running');
     """)
 
     data = cursor.fetchall()
     results = [tuple_to_dict(t, cursor) for t in data]
+    # current_app.logger(f"results {results}")
 
     cursor.close()
     release_db_connection(conn)
@@ -176,3 +177,51 @@ def update_progress(setup_id):
 @api.route('/get_progress_state/', methods=['GET'])
 def get_progress_state():
     return jsonify(current_app.progress_manager.get_progress_state())
+
+
+@api.route("/last_test_end_time", methods=["GET"])
+def last_test_end_time():
+    suite_id = request.args.get('suite_id')
+    if not suite_id:
+        return jsonify({'error': 'suite_id is required'}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            end_time
+        FROM
+            tests
+        WHERE
+            suite_id = %s
+        ORDER BY
+            end_time DESC
+        LIMIT 1
+    """, (suite_id,))
+
+    data = cursor.fetchone()
+    end_time = data[0] if data else None
+
+    cursor.close()
+    release_db_connection(conn)
+    
+    return jsonify({'end_time': end_time})
+
+
+@api.route('/update_scope_status', methods=['PUT'])
+def update_scope_status():
+    data = request.json
+    scope_id = data.get('scope_id')
+    status = data.get('status')
+
+    if not scope_id or not status:
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE Scopes SET status = %s WHERE scope_id = %s", (status, scope_id))
+    conn.commit()
+    release_db_connection(conn)
+
+    return jsonify({"message": "Scope status updated successfully"})

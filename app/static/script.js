@@ -190,6 +190,14 @@ const setupsConfig = {
       "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Acceptance_Tests_rexIO_A101/",
       "comment": ""
     },
+    {
+      "setup": "Local laptop",
+      "setup_id": 19,
+      "job_name": "CI_5G_robot_AVQL_Acceptance_Tests_rexIO_A101/",
+      "ip": "10.83.204.93",
+      "URL": "http://janusz.emea.nsn-net.net:8080/job/CI_5G_robot_AVQL_Acceptance_Tests_rexIO_A101/",
+      "comment": "local setup"
+    }
   ]
 };
 
@@ -262,43 +270,69 @@ function formatDuration(duration) {
     return `${padNumber(hours)}:${padNumber(minutes)}:${padNumber(seconds)}`;
 }
 
-
-
 setInterval(function(){
     $.getJSON("/api/current_test_data", function(data) {
         console.log("Received data:", data);
 
         let currentlyRunningSetups = new Set();
 
-        for (let entry of data) {
-            currentlyRunningSetups.add(entry.setup_id);
+        if (data.length === 0) {
+            // If there are no entries in the data, reset all the rows
+            runningSetups.forEach(setup_id => {
+                resetRow(setup_id);
+            });
+            runningSetups = new Set();
+        } else {
+            for (let entry of data) {
+                currentlyRunningSetups.add(entry.setup_id);
 
-            // Update scope name and its duration
-            $(`#scopeNameElement_${entry.setup_id}`).text(entry.scope_name || "Nothing");
-            $(`#scopeNameElement_${entry.setup_id}`).closest('tr').find('.scope-duration').attr('data-start-time', entry.scope_start_time);
+                // Update scope name and its duration
+                $(`#scopeNameElement_${entry.setup_id}`).text(entry.scope_name || "Nothing");
+                $(`#scopeNameElement_${entry.setup_id}`).closest('tr').find('.scope-duration').attr('data-start-time', entry.scope_start_time);
 
-            // Update test name and its duration
-            $(`#testNameElement_${entry.setup_id}`).text(entry.test_name || "Nothing");
-            $(`#testNameElement_${entry.setup_id}`).closest('tr').find('.test-duration').attr('data-start-time', entry.test_start_time);
+                // Update test name and its duration based on the scope status
+                let testName, testStartTime;
+                if (entry.scope_status === 'running') {
+                    testName = entry.test_name || "Suite Startup";
+                    testStartTime = entry.test_start_time || entry.scope_start_time;
+                } else if (entry.scope_status === 'startup') {
+                    testName = "Suite Startup";
+                    testStartTime = "TBA"
+                } else if (entry.scope_status === 'teardown') {
+                    testName = "Suite Teardown";
+                    testStartTime = "TBA"
+                } else {
+                    testName = "Nothing";
+                    testStartTime = '';
+                }
+
+                $(`#testNameElement_${entry.setup_id}`).text(testName);
+                $(`#testNameElement_${entry.setup_id}`).closest('tr').find('.test-duration').attr('data-start-time', testStartTime);
+            }
+
+            runningSetups.forEach(setup_id => {
+                if (!currentlyRunningSetups.has(setup_id)) {
+                    resetRow(setup_id);
+                }
+            });
+
+            runningSetups = currentlyRunningSetups;
         }
 
-        runningSetups.forEach(setup_id => {
-            if (!currentlyRunningSetups.has(setup_id)) {
-                resetRow(setup_id);
-            }
-        });
-
-        runningSetups = currentlyRunningSetups;
         updateDuration();
     });
 }, 1000);
+
+
 
 setInterval(function () {
     fetch('/api/get_progress_state')
         .then(response => response.json())
         .then(all_progress => {
             for (const [setup_id, progress] of Object.entries(all_progress)) {
-                document.getElementById(`progressElement_${setup_id}`).textContent = progress || '0/0';
+		let [completed, total] = progress.split('/').map(Number); // converts string to numbers
+		let percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+                document.getElementById(`progressElement_${setup_id}`).textContent = `${progress} (${percentage}%)`;
             }
         })
         .catch(error => console.error('Error fetching progress:', error));

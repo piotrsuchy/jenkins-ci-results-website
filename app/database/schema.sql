@@ -14,7 +14,7 @@ CREATE TABLE Scopes (
     end_time TIMESTAMP with time zone,
     completed_tests INT,
     total_tests INT,
-    status TEXT NOT NULL DEFAULT 'running'
+    status TEXT NOT NULL DEFAULT 'startup'
 );
 
 -- Tests Table
