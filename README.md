@@ -1,7 +1,7 @@
 # JENKINS CI RESULTS WEBSITE
 
-This project is a prototype of a web server that will contain live-results for automated tests on CI setups.
-The tests are being automatically run in Robot Framework.
+This project is a public version a web server that contains live-results for automated tests on CI setups.
+The tests are being automatically run in Robot Framework. I use a Robot Framework listener written in Python to send post and put requests to the server's endpoints to update the status of tests and suites.
 
 ## CURRENT VIEW
 
@@ -12,17 +12,20 @@ The tests are being automatically run in Robot Framework.
 - correct display of suite setup and suite teardown duration:
 	- for setup - if the suite is not nested, we can calculate duration from the start_time of the suite, if it's nested we have to calculate duration from the end_time of the last run suite
 	- for teardown - we have to calculate duration from the end_time of the last test case of the current suite
-- figure out how to get setup_id by ip with dupliating ips
+- figure out how to get setup_id by ip when there are multiple setups assigned to one ip 
 - links to karczoch logs
 - Suites, instead of Scopes
 - failing test cases from the current build column
 - take IPs from jenkins api (console output of a job) instead of hard coding it in json
+- execution forcefully stopped (double CTRL + C) doesn't fail the test cases properly - only after new suite started is started it works properly.
+- log the duration of suite startup somehow
 
 
 ### Summary of the project, requirements from others
 
 Live view of the setups, visualised altogether on one page
 Content:
+
 - setup name
 - which scope is being run
 - jenkins info (last few runs, queue, status, stats and duration of tests)
@@ -32,17 +35,7 @@ Content:
 
 ### Jenkins API
 
-Jenkins information is taken from the jobs listed here:
-[Jenkins CI_5G_robot_AVQL search](http://janusz.emea.nsn-net.net:8080/search/?q=CI_5G_robot_AVQL_&Jenkins-Crumb=2f226643baba61453f6c7e39cc93d6e2e4bd376e90ab2944b3f04fdc6daa0942)
-
-I've created a list of pipelines managed by our team and with CI methodology based on that search.
-Currently the json file contains fields such as:
-  
-- setup
-- job_name
-- ip (of the setup)
-- URL (full url on jenkins)
-- comment
+I've created a list of CI pipelines managed by our team as a .json file. Based on this .json file there is a table created in a database and those are the possible setups that can be monitored. 
 
 ### Database
 
@@ -61,7 +54,3 @@ After successfully creating the tables, one should see the following output when
 
 ![database](media/database.png)
 
-### TODO / BUGS
-
-- execution forcefully stopped (double CTRL + C) doesn't fail the test cases properly - only after new suite started is started it works properly.
-- log the duration of suite startup somehow
