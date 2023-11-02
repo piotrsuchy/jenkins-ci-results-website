@@ -9,17 +9,20 @@ The tests are being automatically run in Robot Framework.
 
 ## TODO
 
-- center View Latest Builds button vertically
+- correct display of suite setup and suite teardown duration:
+	- for setup - if the suite is not nested, we can calculate duration from the start_time of the suite, if it's nested we have to calculate duration from the end_time of the last run suite
+	- for teardown - we have to calculate duration from the end_time of the last test case of the current suite
 - figure out how to get setup_id by ip with dupliating ips
 - links to karczoch logs
 - Suites, instead of Scopes
 - failing test cases from the current build column
+- take IPs from jenkins api (console output of a job) instead of hard coding it in json
+
 
 ### Summary of the project, requirements from others
 
 Live view of the setups, visualised altogether on one page
 Content:
-
 - setup name
 - which scope is being run
 - jenkins info (last few runs, queue, status, stats and duration of tests)
@@ -34,7 +37,7 @@ Jenkins information is taken from the jobs listed here:
 
 I've created a list of pipelines managed by our team and with CI methodology based on that search.
 Currently the json file contains fields such as:
-
+  
 - setup
 - job_name
 - ip (of the setup)
@@ -45,7 +48,7 @@ Currently the json file contains fields such as:
 
 Using postgresql@15 run the following commands, first one in any normal terminal, then in the psql cli.
 
-```bash
+```
 psql -U postgres
 CREATE DATABASE ci_monitor_db;
 \c ci_monitor_db;
@@ -57,3 +60,8 @@ Then copy the schema.sql file and paste into the command line in psql. This will
 After successfully creating the tables, one should see the following output when running \d command:
 
 ![database](media/database.png)
+
+### TODO / BUGS
+
+- execution forcefully stopped (double CTRL + C) doesn't fail the test cases properly - only after new suite started is started it works properly.
+- log the duration of suite startup somehow

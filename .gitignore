@@ -9,4 +9,6 @@ output.txt
 temporary_test/
 .vscode/
 count_lines.py
-setups_config.json
+tests/PythonListener_*
+.DS_Store
+
