@@ -1,5 +1,7 @@
-import requests, os
-import json, datetime
+import requests
+import os
+import json
+import datetime
 import pytz
 from dotenv import load_dotenv
 
@@ -12,13 +14,13 @@ from app.utils.db_utils import (
     get_latest_scope_id,
 )
 
-load_dotenv()
-
+load_dotenv("/home/hw/pci_tools/ci_jenkins_monitor/.env")
 
 class PythonListener:
     ROBOT_LISTENER_API_VERSION = 3
 
     def __init__(self, interval=10):
+        # load_dotenv(r"C:\Users\suchy\pci_tools\ci_jenkins_monitor\.env")
         self.interval = interval
 
         self.test_start_time = None
@@ -33,6 +35,7 @@ class PythonListener:
 
         self.setups = self._read_setups_from_config()
         self.setup_id = self.find_matching_setup()
+        self.scope_status = None
         # Fetch the latest test_id from the database and use it as the starting point
         conn = self._get_db_connection()
         self.current_test_id = get_latest_test_id(conn)
@@ -43,6 +46,7 @@ class PythonListener:
 
         
     def start_suite(self, data, result):
+        self.scope_status = "startup"
         self.total_tests_in_scope = len(list(data.tests))
         self.tests_completed = 0
         self.max_id += 1
@@ -58,6 +62,8 @@ class PythonListener:
 
     def start_test(self, data, result):
         # print(f"STARTING TEST WITH ID: {self.current_test_id}")
+        if self.scope_status == "startup":
+            self.update_scope_status(self.current_scope_id, 'running')
         conn = self._get_db_connection()
         self.current_test_id = get_latest_test_id(conn) + 1
         release_db_connection(conn)
@@ -70,6 +76,10 @@ class PythonListener:
 
     def end_test(self, data, result):
         self.tests_completed += 1
+        if self.tests_completed == self.total_tests_in_scope:
+            self.update_progress()
+            print("LAST TEST CASE ENDED - changing scope status to teardown")
+            self.update_scope_status(self.current_scope_id, 'teardown')
         test_status = "pass" if result.passed else "fail"
         test_data = self._prepare_test_data_end(test_status)
         self._update_end_time(test_data)
@@ -168,9 +178,19 @@ class PythonListener:
     def find_matching_setup(self):
         matching_setup = find_setup_by_hostname(self.setups)
         if matching_setup is None:
-            print(f"Didn't find any matching setups!!!")
+            # print(f"Didn't find any matching setups!!!")
             matching_setup = self.setups[0]
         return matching_setup["setup_id"]
 
     def get_setup_id(self):
         return self.setup_id
+
+    def update_scope_status(self, scope_id, status):
+        url = f'http://{self.server_address}/api/update_scope_status'
+        data = {
+            'scope_id': scope_id,
+            'status': status
+        }
+        response = requests.put(url, json=data)
+        if response.status_code != 200:
+            print("Failed to update scope status:", response.content)
