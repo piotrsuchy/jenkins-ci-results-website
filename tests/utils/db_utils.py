@@ -1,15 +1,14 @@
-# db_utils.py
-
+# utility functions related to databases
 import os
 from dotenv import load_dotenv
 from psycopg2.pool import SimpleConnectionPool
 
-load_dotenv()
+load_dotenv(dotenv_path="/home/hw/pci_tools/ci_jenkins_monitor/.env")
 
 # Setting up the Connection Pool
 DATABASE_POOL = SimpleConnectionPool(
     minconn=1,
-    maxconn=15,
+    maxconn=20,
     dbname=os.environ.get("DB_NAME"),
     user=os.environ.get("DB_USER"),
     password=os.environ.get("DB_PASS"),
@@ -19,6 +18,11 @@ DATABASE_POOL = SimpleConnectionPool(
 
 
 def get_db_connection():
+    # print("NAME", os.environ.get("DB_NAME"))
+    # print("USER", os.environ.get("DB_USER"))
+    # print("PASS", os.environ.get("DB_PASS"))
+    # print("HOST", os.environ.get("DB_HOST"))
+    # print("PORT", os.environ.get("DB_PORT"))
     return DATABASE_POOL.getconn()
 
 
