@@ -12,13 +12,11 @@ The tests are being automatically run in Robot Framework. I use a Robot Framewor
 - correct display of suite setup and suite teardown duration:
 	- for setup - if the suite is not nested, we can calculate duration from the start_time of the suite, if it's nested we have to calculate duration from the end_time of the last run suite
 	- for teardown - we have to calculate duration from the end_time of the last test case of the current suite
-- figure out how to get setup_id by ip when there are multiple setups assigned to one ip 
+- figure out how to get setup_id by ip with dupliating ips
 - links to karczoch logs
 - Suites, instead of Scopes
 - failing test cases from the current build column
 - take IPs from jenkins api (console output of a job) instead of hard coding it in json
-- execution forcefully stopped (double CTRL + C) doesn't fail the test cases properly - only after new suite started is started it works properly.
-- log the duration of suite startup somehow
 
 
 ### Summary of the project, requirements from others
