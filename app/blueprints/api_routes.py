@@ -4,6 +4,7 @@ from flask import current_app
 
 # Import utilities
 from ..utils.db_utils import get_db_connection, tuple_to_dict, release_db_connection
+from ..utils.general_utils import format_datetime_for_frontend
 
 api = Blueprint('api', __name__)
 
@@ -177,6 +178,47 @@ def update_progress(setup_id):
 @api.route('/get_progress_state/', methods=['GET'])
 def get_progress_state():
     return jsonify(current_app.progress_manager.get_progress_state())
+
+
+@api.route('/get_start_times/<setup_id>', methods=['GET'])
+def get_start_times(setup_id):
+    setup_start_time = current_app.setup_duration.get_setup_start_time(setup_id)
+    teardown_start_time = current_app.teardown_duration.get_teardown_start_time(setup_id)
+
+    if type(setup_start_time) is not None:
+        current_app.logger.error(f"FOUND A START TIME THAT ISN't NONE")
+        current_app.logger.error(setup_start_time)
+        current_app.logger.error(type(teardown_start_time))
+
+    # formatted_setup_start_time = format_datetime_for_frontend(setup_start_time)
+    # formatted_teardown_start_time = format_datetime_for_frontend(teardown_start_time)
+
+    return jsonify({
+        'setup_start_time': setup_start_time,
+        'teardown_start_time': teardown_start_time
+    })
+
+
+@api.route('/update_setup_start_time', methods=['POST'])
+def update_setup_start_time():
+    data = request.get_json()
+    setup_id = data.get('setup_id')
+    start_time = data.get('start_time')
+    if setup_id and start_time:
+        current_app.setup_duration.update_setup_start_time(setup_id, start_time)
+        return jsonify({"message": "Setup start time updated successfully"}), 200
+    return jsonify({"error": "Invalid data"}), 400
+
+
+@api.route('/update_teardown_start_time', methods=['POST'])
+def update_teardown_start_time():
+    data = request.get_json()
+    setup_id = data.get('setup_id')
+    start_time = data.get('start_time')
+    if setup_id and start_time:
+        current_app.teardown_duration.update_teardown_start_time(setup_id, start_time)
+        return jsonify({"message": "Teardown start time updated successfully"}), 200
+    return jsonify({"error": "Invalid data"}), 400
 
 
 @api.route("/last_test_end_time", methods=["GET"])
