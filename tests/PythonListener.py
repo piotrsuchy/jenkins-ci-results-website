@@ -6,7 +6,7 @@ import pytz
 from dotenv import load_dotenv
 
 # Import utilities
-from app.utils.general_utils import find_setup_by_hostname
+from app.utils.general_utils import find_setup_by_hostname, get_current_warsaw_time
 from app.utils.db_utils import (
     get_db_connection,
     release_db_connection,
@@ -78,6 +78,7 @@ class PythonListener:
         self.tests_completed += 1
         if self.tests_completed == self.total_tests_in_scope:
             self.update_progress()
+            self.on_suite_teardown_detected()
             print("LAST TEST CASE ENDED - changing scope status to teardown")
             self.update_scope_status(self.current_scope_id, 'teardown')
         test_status = "pass" if result.passed else "fail"
@@ -103,6 +104,7 @@ class PythonListener:
         self.tests_completed = 0
         self.total_tests_in_scope = 0
         self.update_progress()
+        self.on_suite_setup_detected()
 
     def _prepare_test_data_start(self, data):
         return {
@@ -179,7 +181,7 @@ class PythonListener:
         matching_setup = find_setup_by_hostname(self.setups)
         if matching_setup is None:
             # print(f"Didn't find any matching setups!!!")
-            matching_setup = self.setups[0]
+            matching_setup = self.setups[3]
         return matching_setup["setup_id"]
 
     def get_setup_id(self):
@@ -194,3 +196,24 @@ class PythonListener:
         response = requests.put(url, json=data)
         if response.status_code != 200:
             print("Failed to update scope status:", response.content)
+
+
+    def on_suite_setup_detected(self):
+        start_time = get_current_warsaw_time()
+        url = f"http://{self.server_address}/api/update_setup_start_time"
+        data = {'setup_id': self.setup_id, 'start_time': start_time}
+        response = requests.post(url, json=data)
+        if response.status_code == 200:
+            print("Setup start time updated successfully")
+        else:
+            print("Failed to update setup start time")
+
+    def on_suite_teardown_detected(self):
+        start_time = get_current_warsaw_time()
+        url = f"http://{self.server_address}/api/update_teardown_start_time"
+        data = {'setup_id': self.setup_id, 'start_time': start_time}
+        response = requests.post(url, json=data)
+        if response.status_code == 200:
+            print("Teardown start time updated successfully")
+        else:
+            print("Failed to update teardown start time", response)
