@@ -1,5 +1,6 @@
 from flask import current_app
 
+
 class SetupDuration:
     def __init__(self):
         self._durations_state = {}

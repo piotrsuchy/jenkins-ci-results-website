@@ -6,7 +6,7 @@ After=network.target
 User=hw
 Group=hw
 WorkingDirectory=/home/hw/pci_tools/ci_jenkins_monitor
-ExecStart=/home/hw/pci_tools/ci_jenkins_monitor/venv/bin/gunicorn -w 1 -b 0.0.0.0:8000 run:app
+ExecStart=/home/hw/pci_tools/ci_jenkins_monitor/venv/bin/gunicorn -w 1 -b 0.0.0.0:8000 run:app --log-config /home/hw/pci_tools/ci_jenkins_monitor/app/logging_config.py
 
 [Install]
 WantedBy=multi-user.target

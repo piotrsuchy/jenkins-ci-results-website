@@ -25,8 +25,8 @@ function updateDuration() {
         const startTime = td.getAttribute('data-start-time');
         const setupId = td.closest('tr').getAttribute('data-setup-id');
         
-        console.log(`Start Time for setupId ${setupId}:`, startTime);
-        
+        // console.log(`Start Time for setupId ${setupId}:`, startTime);
+
         if (runningSetups.has(parseInt(setupId))) {
             const duration = computeDuration(startTime);
             console.log(`Computed Duration for setupId ${setupId}:`, duration);
@@ -314,10 +314,9 @@ setInterval(function() {
 
                 let testName;
                 if (entry.scope_status === 'running') {
-                    testName = entry.test_name || "Suite Startup";
-                    let testStartTime = entry.test_start_time || entry.scope_start_time;
-                    $(`#testNameElement_${entry.setup_id}`).closest('tr').find('.test-duration').attr('data-start-time', testStartTime);
-                    $(`#testNameElement_${entry.setup_id}`).text(testName);
+                    testName = entry.test_name;
+                    $(`#testNameElement_${entry.setup_id}`).closest('tr').find('.test-duration').attr('data-start-time', entry.test_start_time);
+                    $(`#testNameElement_${entry.setup_id}`).text(entry.test_name);
                 } else if (entry.scope_status === 'startup' || entry.scope_status === 'teardown') {
                     fetchStartTimes(entry.setup_id, entry.scope_status);
                 } else {
@@ -347,6 +346,8 @@ function fetchStartTimes(setupId, status) {
         let startTimes = [times.setup_start_time, times.teardown_start_time];
         let testStartTime = startTimes[startTimeIndex];
 
+        console.log('Fetching start times: ', testStartTime)
+
         $(`#testNameElement_${setupId}`).text(testName);
         $(`#testNameElement_${setupId}`).closest('tr').find('.test-duration').attr('data-start-time', testStartTime || '');
     }).fail(function(jqxhr, textStatus, error) {
@@ -370,7 +371,7 @@ setInterval(function () {
 }, 1000);
 
 
-setInterval(updateDuration, 1000);
+// setInterval(updateDuration, 1000);
 
 // Function to log the startTimesDict to the console
 function logStartTimesDict() {

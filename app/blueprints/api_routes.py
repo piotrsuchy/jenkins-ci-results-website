@@ -185,10 +185,10 @@ def get_start_times(setup_id):
     setup_start_time = current_app.setup_duration.get_setup_start_time(setup_id)
     teardown_start_time = current_app.teardown_duration.get_teardown_start_time(setup_id)
 
-    if type(setup_start_time) is not None:
-        current_app.logger.error(f"FOUND A START TIME THAT ISN't NONE")
-        current_app.logger.error(setup_start_time)
-        current_app.logger.error(type(teardown_start_time))
+    # if type(setup_start_time) is not None:
+        # current_app.logger.error(f"FOUND A START TIME THAT ISN't NONE")
+        # current_app.logger.error(setup_start_time)
+        # current_app.logger.error(type(teardown_start_time))
 
     # formatted_setup_start_time = format_datetime_for_frontend(setup_start_time)
     # formatted_teardown_start_time = format_datetime_for_frontend(teardown_start_time)
