@@ -1,7 +1,7 @@
 {
     "pipelines": [
         {
-            "setup": "LOCALHOST",
+            "setup": "Jenkins server Linode VM",
             "hostname": "None",
             "setup_id": 1,
             "job_name": "CI_example_job_name",
@@ -10,22 +10,22 @@
             "comment": "Placeholder pipeline for localhost development"
         },
         {
-            "setup": "SETUP_1",
+            "setup": "Linode VM 1",
             "hostname": "example_hostname",
             "setup_id": 2,
-            "job_name": "CI_example_job_name_for_setup_2",
-            "ip": "10.10.10.255",
-            "URL": "example_url_2.com",
-            "comment": "Placeholder pipeline for setup 2"
+            "job_name": "no_job_name",
+            "ip": "139.162.175.249",
+            "URL": "no_url",
+            "comment": "Linode VM 1 - ready and working"
         },
         {
-            "setup": "SETUP_3",
+            "setup": "Linode VM 2",
             "hostname": "example_hostname",
             "setup_id": 2,
-            "job_name": "CI_example_job_name_for_setup_2",
-            "ip": "8.8.8.255",
-            "URL": "example_url_2.com",
-            "comment": "Placeholder pipeline for setup 2"
+            "job_name": "no_job_name",
+            "ip": "",
+            "URL": "no_url",
+            "comment": "Linode VM 2 - not setup yet"
         }
     ]
 }

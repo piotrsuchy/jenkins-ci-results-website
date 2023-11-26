@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from psycopg2.pool import SimpleConnectionPool
 
-load_dotenv(dotenv_path="/var/lib/jenkins/credentials/.env")
+load_dotenv(dotenv_path="/root/credentials/.env")
 
 # Setting up the Connection Pool
 DATABASE_POOL = SimpleConnectionPool(
