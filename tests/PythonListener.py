@@ -6,15 +6,15 @@ import pytz
 from dotenv import load_dotenv
 
 # Import utilities
-from app.utils.general_utils import find_setup_by_hostname, get_current_warsaw_time
-from app.utils.db_utils import (
+from tests.utils.general_utils import find_setup_by_hostname, get_current_warsaw_time, find_setup_by_ip
+from tests.utils.db_utils import (
     get_db_connection,
     release_db_connection,
     get_latest_test_id,
     get_latest_scope_id,
 )
 
-load_dotenv("/var/lib/jenkins/credentials/.env")
+load_dotenv("/root/credentials/.env")
 
 class PythonListener:
     ROBOT_LISTENER_API_VERSION = 3
@@ -42,6 +42,7 @@ class PythonListener:
         release_db_connection(conn)
         
         self.server_address = os.environ.get("CI_MONITOR_SERVER_ADDRESS")
+        # print(f"server address: {self.server_address}")
 
         
     def start_suite(self, data, result):
@@ -177,10 +178,10 @@ class PythonListener:
         return f"{self.tests_completed}/{self.total_tests_in_scope}"
 
     def find_matching_setup(self):
-        matching_setup = find_setup_by_hostname(self.setups)
+        matching_setup = find_setup_by_ip(self.setups)
         if matching_setup is None:
-            # print(f"Didn't find any matching setups!!!")
-            matching_setup = self.setups[3]
+            print(f"Didn't find any matching setups!!!")
+            matching_setup = self.setups[0]
         return matching_setup["setup_id"]
 
     def get_setup_id(self):
