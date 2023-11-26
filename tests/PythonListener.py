@@ -14,7 +14,7 @@ from app.utils.db_utils import (
     get_latest_scope_id,
 )
 
-load_dotenv("/home/piotr/jenkins-ci-results-website/.env")
+load_dotenv("/var/lib/jenkins/credentials/.env")
 
 class PythonListener:
     ROBOT_LISTENER_API_VERSION = 3
