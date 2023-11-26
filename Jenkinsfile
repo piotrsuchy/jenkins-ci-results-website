@@ -12,7 +12,7 @@ pipeline {
         sh '''#!/bin/bash
 
 echo "Trying to restart a service ci_monitor_tool.service"
-./home/piotr/jenkins-ci-results-website/scripts/restart_service.sh
+/home/piotr/jenkins-ci-results-website/scripts/restart_service.sh
 echo "Restarted the service sucessfully"'''
       }
     }
