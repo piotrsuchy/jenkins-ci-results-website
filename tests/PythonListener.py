@@ -14,13 +14,12 @@ from app.utils.db_utils import (
     get_latest_scope_id,
 )
 
-load_dotenv("/home/hw/pci_tools/ci_jenkins_monitor/.env")
+load_dotenv("/home/piotr/jenkins-ci-results-website/.env")
 
 class PythonListener:
     ROBOT_LISTENER_API_VERSION = 3
 
     def __init__(self, interval=10):
-        # load_dotenv(r"C:\Users\suchy\pci_tools\ci_jenkins_monitor\.env")
         self.interval = interval
 
         self.test_start_time = None

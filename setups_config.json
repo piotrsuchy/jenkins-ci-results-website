@@ -14,6 +14,15 @@
             "hostname": "example_hostname",
             "setup_id": 2,
             "job_name": "CI_example_job_name_for_setup_2",
+            "ip": "10.10.10.255",
+            "URL": "example_url_2.com",
+            "comment": "Placeholder pipeline for setup 2"
+        },
+        {
+            "setup": "SETUP_3",
+            "hostname": "example_hostname",
+            "setup_id": 2,
+            "job_name": "CI_example_job_name_for_setup_2",
             "ip": "8.8.8.255",
             "URL": "example_url_2.com",
             "comment": "Placeholder pipeline for setup 2"

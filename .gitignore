@@ -11,4 +11,4 @@ temporary_test/
 count_lines.py
 tests/PythonListener_*
 .DS_Store
-
+logs/

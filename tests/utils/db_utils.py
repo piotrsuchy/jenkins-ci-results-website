@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from psycopg2.pool import SimpleConnectionPool
 
-load_dotenv(dotenv_path="/home/hw/pci_tools/ci_jenkins_monitor/.env")
+load_dotenv(dotenv_path="/home/piotr/jenkins-ci-results-website/.env")
 
 # Setting up the Connection Pool
 DATABASE_POOL = SimpleConnectionPool(
